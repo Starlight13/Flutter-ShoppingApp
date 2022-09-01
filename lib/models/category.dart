@@ -4,21 +4,36 @@ import 'package:shopping_app/models/product/product_short.dart';
 import 'package:http/http.dart' as http;
 
 class Category {
-  String name;
-  List<ProductShort>? products;
+  final String _name;
 
-  Category(this.name) {
-    getProductsInCategory();
-  }
+  Category._internal(this._name);
 
-  void getProductsInCategory() async {
+  String get name => _name;
+
+  Future<List<ProductShort>> get products async {
     try {
       final url = Uri.https('dummyjson.com', 'products/category/$name');
 
       final http.Response response = await http.get(url);
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body)['products'] as List;
-        products = data.map((e) => ProductShort.fromJson(e)).toList();
+        return data.map((e) => ProductShort.fromJson(e)).toList();
+      } else {
+        throw Exception(response.body);
+      }
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  static Future<List<Category>> getAllCategories() async {
+    try {
+      final url = Uri.https('dummyjson.com', 'products/categories');
+
+      final http.Response response = await http.get(url);
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body) as List;
+        return data.map((e) => Category._internal(e)).toList();
       } else {
         throw Exception(response.body);
       }

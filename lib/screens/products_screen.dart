@@ -6,8 +6,11 @@ import 'package:provider/provider.dart';
 import 'package:shopping_app/components/product_future_builder.dart';
 import 'package:shopping_app/components/product_search.dart';
 import 'package:shopping_app/models/cart/cart.dart';
+import 'package:shopping_app/models/category.dart';
 import 'package:shopping_app/models/product/product_short.dart';
 import 'package:shopping_app/components/cart_button.dart';
+
+import '../components/categories_list.dart';
 
 class ProductScreen extends StatefulWidget {
   static const id = 'product_screen';
@@ -57,10 +60,8 @@ class _ProductScreenState extends State<ProductScreen> {
             ),
             actions: const [CartButton()],
           ),
-          body: SafeArea(
-            child: ProductFutureBuilder(
-              future: getData(),
-            ),
+          body: const SafeArea(
+            child: Padding(padding: EdgeInsets.only(top: 20.0), child: CategoriesList()),
           ),
         );
       },

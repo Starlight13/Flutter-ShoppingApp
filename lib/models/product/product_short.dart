@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:http/http.dart' as http;
 part 'product_short.g.dart';
@@ -9,9 +10,17 @@ class ProductShort {
   final int id;
   final String title;
   final int price;
+  final String description;
   final String thumbnail;
 
-  ProductShort(this.id, this.title, this.price, this.thumbnail);
+  ProductShort({required this.id, required this.title, required this.price, required this.description, required this.thumbnail});
+
+  String get shortDescription {
+    if (description.characters.length > 50) {
+      return '${description.substring(0, 50)}...';
+    }
+    return description;
+  }
 
   factory ProductShort.fromJson(Map<String, dynamic> json) => _$ProductShortFromJson(json);
 

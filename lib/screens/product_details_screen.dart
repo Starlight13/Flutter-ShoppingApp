@@ -106,7 +106,15 @@ class ProductDetailsScreen extends StatelessWidget {
                             BigButton(
                               'Add to cart',
                               onPressed: () {
-                                context.read<Cart>().addToCart(ProductShort(product.id, product.title, product.price, product.thumbnail));
+                                context.read<Cart>().addToCart(
+                                      ProductShort(
+                                        id: product.id,
+                                        title: product.title,
+                                        price: product.price,
+                                        description: product.description,
+                                        thumbnail: product.thumbnail,
+                                      ),
+                                    );
                                 Navigator.pop(context);
                               },
                             ),
