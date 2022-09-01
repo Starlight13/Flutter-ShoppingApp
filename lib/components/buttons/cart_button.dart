@@ -22,7 +22,7 @@ class CartButton extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(1),
               decoration: BoxDecoration(
-                color: Colors.deepOrange,
+                color: Colors.teal,
                 borderRadius: BorderRadius.circular(6),
               ),
               constraints: const BoxConstraints(

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:shopping_app/models/product/product_short.dart';
-
-import '../screens/product_details_screen.dart';
+import 'package:shopping_app/screens/product_details_screen.dart';
 
 const cardTextStyle = TextStyle(fontWeight: FontWeight.bold);
 
@@ -30,7 +29,6 @@ class ProductsHorizontalList extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (context) => ProductDetailsScreen(
                       productId: product.id,
-                      productTitle: product.title,
                     ),
                   ),
                 );

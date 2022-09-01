@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shopping_app/components/product_list_tile.dart';
+import 'package:shopping_app/components/lists/product_list_tile.dart';
 import 'package:shopping_app/models/product/product_short.dart';
 
 class ProductsList extends StatelessWidget {

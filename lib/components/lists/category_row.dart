@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:shopping_app/components/products_horizontal_list.dart';
+import 'package:shopping_app/components/lists/products_horizontal_list.dart';
 import 'package:shopping_app/models/category.dart';
 import 'package:shopping_app/models/product/product_short.dart';
-import 'package:shopping_app/extentions.dart';
+import 'package:shopping_app/extensions.dart';
 
 class CategoryRow extends StatelessWidget {
   const CategoryRow({required this.category, Key? key}) : super(key: key);

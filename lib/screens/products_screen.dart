@@ -1,49 +1,15 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import 'package:shopping_app/components/product_future_builder.dart';
 import 'package:shopping_app/components/product_search.dart';
+import 'package:shopping_app/constants.dart';
 import 'package:shopping_app/models/cart/cart.dart';
-import 'package:shopping_app/models/category.dart';
-import 'package:shopping_app/models/product/product_short.dart';
-import 'package:shopping_app/components/cart_button.dart';
+import 'package:shopping_app/components/buttons/cart_button.dart';
+import 'package:shopping_app/components/lists/categories_list.dart';
 
-import '../components/categories_list.dart';
-
-class ProductScreen extends StatefulWidget {
+class ProductScreen extends StatelessWidget {
   static const id = 'product_screen';
 
   const ProductScreen({Key? key}) : super(key: key);
-
-  @override
-  State<ProductScreen> createState() => _ProductScreenState();
-}
-
-class _ProductScreenState extends State<ProductScreen> {
-  List<ProductShort>? products;
-  bool isLoading = false;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  Future<List<ProductShort>> getData() async {
-    try {
-      var url = Uri.https('dummyjson.com', 'products');
-      var response = await http.get(url);
-      if (response.statusCode == 200) {
-        var data = jsonDecode(response.body)['products'] as List;
-        return data.map((e) => ProductShort.fromJson(e)).toList();
-      } else {
-        throw Exception(response.body);
-      }
-    } catch (e) {
-      throw Exception(e);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +17,13 @@ class _ProductScreenState extends State<ProductScreen> {
       builder: (context, cart, child) {
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Shopping app'),
+            elevation: 0,
+            backgroundColor: Colors.white,
+            iconTheme: IconThemeData(color: Colors.black.withOpacity(0.9)),
+            title: const Text(
+              'Shopping app',
+              style: appBarTitleStyle,
+            ),
             leading: IconButton(
               onPressed: () {
                 showSearch(context: context, delegate: ProductSearchDelegate());

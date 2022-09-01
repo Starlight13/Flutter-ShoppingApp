@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shopping_app/components/products_list.dart';
+import 'package:shopping_app/components/lists/products_list.dart';
+import 'package:shopping_app/constants.dart';
 import 'package:shopping_app/models/cart/cart.dart';
 
 class CartScreen extends StatelessWidget {
@@ -17,13 +18,19 @@ class CartScreen extends StatelessWidget {
       builder: (context, cart, child) {
         return Scaffold(
           appBar: AppBar(
+            elevation: 0,
+            backgroundColor: Colors.white,
+            iconTheme: IconThemeData(color: Colors.black.withOpacity(0.9)),
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: () {
                 Navigator.pop(context);
               },
             ),
-            title: const Text('My cart'),
+            title: const Text(
+              'My cart',
+              style: appBarTitleStyle,
+            ),
             actions: [
               IconButton(
                 onPressed: () {

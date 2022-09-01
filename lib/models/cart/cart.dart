@@ -23,12 +23,12 @@ class Cart extends ChangeNotifier {
 
   UnmodifiableListView<ProductShort> get productsInCart => UnmodifiableListView(_productsInCart.map((e) => e.product));
 
-  void addToCart(ProductShort product) {
-    final existingCartItem = _productsInCart.firstWhereOrNull((element) => element.product == product);
+  void addToCart(CartItem newCartItem) {
+    final existingCartItem = _productsInCart.firstWhereOrNull((element) => element.product == newCartItem.product);
     if (existingCartItem != null) {
-      existingCartItem.increaseQty();
+      existingCartItem.increaseQty(newCartItem.quantity);
     } else {
-      _productsInCart.add(CartItem(1, product));
+      _productsInCart.add(newCartItem);
     }
     notifyListeners();
   }

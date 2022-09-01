@@ -20,7 +20,6 @@ class ProductListTile extends StatelessWidget {
             MaterialPageRoute(
               builder: (context) => ProductDetailsScreen(
                 productId: product!.id,
-                productTitle: product!.title,
               ),
             ),
           );

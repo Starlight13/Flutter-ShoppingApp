@@ -15,8 +15,8 @@ class CartItem {
   @override
   int get hashCode => Object.hash(quantity.hashCode, product.hashCode);
 
-  void increaseQty() {
-    _quantity++;
+  void increaseQty(int by) {
+    _quantity += by;
   }
 
   void decreaseQty() {

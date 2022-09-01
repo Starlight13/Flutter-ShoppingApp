@@ -15,7 +15,11 @@ class BigButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextButton(
       style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all(Colors.lightBlueAccent),
+        padding: MaterialStateProperty.all(const EdgeInsets.symmetric(vertical: 15.0)),
+        backgroundColor: MaterialStateProperty.all(Colors.teal),
+        shape: MaterialStateProperty.all(
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        ),
       ),
       onPressed: onPressed,
       child: Text(buttonText, style: buttonTextStyle),
