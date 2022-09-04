@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shopping_app/components/lists/category_row.dart';
+import 'package:shopping_app/components/lists/items/category_row.dart';
 import 'package:shopping_app/models/category.dart';
 
 class CategoriesList extends StatelessWidget {

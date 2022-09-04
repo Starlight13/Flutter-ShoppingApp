@@ -12,3 +12,8 @@ const appBarTitleStyle = TextStyle(
   fontWeight: FontWeight.w600,
   letterSpacing: 0,
 );
+
+const descriptionTextStyle = TextStyle(
+  fontSize: 12.0,
+  color: Colors.grey,
+);

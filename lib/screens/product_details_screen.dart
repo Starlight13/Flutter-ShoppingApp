@@ -6,7 +6,7 @@ import 'package:shopping_app/models/product/product_short.dart';
 import 'package:shopping_app/components/add_to_cart_toolbar.dart';
 import 'package:shopping_app/components/buttons/cart_button.dart';
 
-class ProductDetailsScreen extends StatelessWidget {
+class ProductDetailsScreen extends StatefulWidget {
   static const id = 'product_details_screen';
 
   final int productId;
@@ -14,14 +14,35 @@ class ProductDetailsScreen extends StatelessWidget {
   const ProductDetailsScreen({required this.productId, Key? key}) : super(key: key);
 
   @override
+  State<ProductDetailsScreen> createState() => _ProductDetailsScreenState();
+}
+
+class _ProductDetailsScreenState extends State<ProductDetailsScreen> with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    duration: const Duration(milliseconds: 500),
+    vsync: this,
+  );
+
+  @override
+  void initState() {
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _controller.reverse();
+      }
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        elevation: 0,
-        iconTheme: IconThemeData(
-          color: Colors.black.withOpacity(0.9), //change your color here
-        ),
-        backgroundColor: Colors.white,
         title: const Text(
           'Product Details',
           style: appBarTitleStyle,
@@ -32,11 +53,15 @@ class ProductDetailsScreen extends StatelessWidget {
             Navigator.pop(context);
           },
         ),
-        actions: const [CartButton()],
+        actions: [
+          CartButton(
+            controller: _controller,
+          )
+        ],
       ),
       body: SafeArea(
         child: FutureBuilder<Product>(
-          future: Product.productFromId(productId),
+          future: Product.productFromId(widget.productId),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               if (snapshot.hasData) {
@@ -83,6 +108,9 @@ class ProductDetailsScreen extends StatelessWidget {
                               height: 20.0,
                             ),
                             AddToCartToolbar(
+                              additionalAction: () {
+                                _controller.forward();
+                              },
                               product: ProductShort(
                                 id: product.id,
                                 title: product.title,

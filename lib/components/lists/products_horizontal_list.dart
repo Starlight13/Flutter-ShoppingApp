@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shopping_app/constants.dart';
 
 import 'package:shopping_app/models/product/product_short.dart';
 import 'package:shopping_app/screens/product_details_screen.dart';
@@ -69,10 +70,7 @@ class ProductsHorizontalList extends StatelessWidget {
                     ),
                     Text(
                       product.shortDescription,
-                      style: const TextStyle(
-                        fontSize: 12.0,
-                        color: Colors.grey,
-                      ),
+                      style: descriptionTextStyle,
                     )
                   ],
                 ),

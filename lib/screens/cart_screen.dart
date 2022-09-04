@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shopping_app/components/lists/products_list.dart';
+import 'package:shopping_app/components/lists/cart_list.dart';
 import 'package:shopping_app/constants.dart';
 import 'package:shopping_app/models/cart/cart.dart';
 
@@ -18,9 +18,6 @@ class CartScreen extends StatelessWidget {
       builder: (context, cart, child) {
         return Scaffold(
           appBar: AppBar(
-            elevation: 0,
-            backgroundColor: Colors.white,
-            iconTheme: IconThemeData(color: Colors.black.withOpacity(0.9)),
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: () {
@@ -69,14 +66,32 @@ class CartScreen extends StatelessWidget {
               ),
             ],
           ),
-          body: Column(
-            children: [
-              ProductsList(products: cart.productsInCart),
-              Text(
-                'Total: ${cart.cartSummary}',
-                style: const TextStyle(fontSize: 40.0),
-              ),
-            ],
+          body: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              children: [
+                const CartList(),
+                Divider(
+                  thickness: 2.0,
+                  color: Colors.grey.withOpacity(0.1),
+                ),
+                Row(
+                  children: [
+                    const Text(
+                      'Total:',
+                      style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600, color: Colors.grey),
+                    ),
+                    Expanded(
+                      child: Text(
+                        '\$${cart.cartSummary}',
+                        textAlign: TextAlign.end,
+                        style: const TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold, color: Colors.teal),
+                      ),
+                    )
+                  ],
+                ),
+              ],
+            ),
           ),
         );
       },

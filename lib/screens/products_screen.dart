@@ -17,9 +17,6 @@ class ProductScreen extends StatelessWidget {
       builder: (context, cart, child) {
         return Scaffold(
           appBar: AppBar(
-            elevation: 0,
-            backgroundColor: Colors.white,
-            iconTheme: IconThemeData(color: Colors.black.withOpacity(0.9)),
             title: const Text(
               'Shopping app',
               style: appBarTitleStyle,
@@ -30,7 +27,7 @@ class ProductScreen extends StatelessWidget {
               },
               icon: const Icon(Icons.search),
             ),
-            actions: const [CartButton()],
+            actions: [CartButton()],
           ),
           body: const SafeArea(
             child: Padding(padding: EdgeInsets.only(top: 20.0), child: CategoriesList()),

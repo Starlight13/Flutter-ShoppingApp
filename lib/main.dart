@@ -16,6 +16,16 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider<Cart>(
       create: (context) => Cart.instance,
       child: MaterialApp(
+        theme: ThemeData(
+          primaryColor: Colors.white,
+          appBarTheme: AppBarTheme(
+            backgroundColor: Colors.white,
+            elevation: 0,
+            iconTheme: IconThemeData(
+              color: Colors.black.withOpacity(0.9),
+            ),
+          ),
+        ),
         initialRoute: ProductScreen.id,
         routes: {
           ProductScreen.id: (context) => const ProductScreen(),

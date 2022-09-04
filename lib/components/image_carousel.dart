@@ -46,7 +46,7 @@ class _ImageCarouselState extends State<ImageCarousel> {
               children: widget.images.asMap().entries.map((entry) {
                 return GestureDetector(
                   onTap: () => _controller.animateToPage(entry.key),
-                  child: Container(
+                  child: AnimatedContainer(
                     width: _current == entry.key ? 30.0 : 6.0,
                     height: 6.0,
                     margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
@@ -56,6 +56,8 @@ class _ImageCarouselState extends State<ImageCarousel> {
                       color: (Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black)
                           .withOpacity(_current == entry.key ? 0.9 : 0.4),
                     ),
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeInOutBack,
                   ),
                 );
               }).toList(),
