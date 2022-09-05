@@ -6,6 +6,7 @@ import 'package:shopping_app/models/cart/cart.dart';
 
 class CartScreen extends StatelessWidget {
   static const id = 'cart_screen';
+  // VR: remove next line :)
   final foo = {};
 
   CartScreen({
@@ -20,6 +21,7 @@ class CartScreen extends StatelessWidget {
           appBar: AppBar(
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
+              // VR: could be replaced with oneliner: `onPressed: () => Navigator.pop(context),`
               onPressed: () {
                 Navigator.pop(context);
               },
@@ -35,8 +37,10 @@ class CartScreen extends StatelessWidget {
                     context: context,
                     builder: (context) {
                       return AlertDialog(
+                        // VR: Read about localization. It's a good practice to to it from a beginning
                         title: const Text('Clear cart'),
-                        content: const Text('Are you sure you want to clear cart?'),
+                        content:
+                            const Text('Are you sure you want to clear cart?'),
                         actions: [
                           TextButton(
                             onPressed: () {
@@ -79,13 +83,19 @@ class CartScreen extends StatelessWidget {
                   children: [
                     const Text(
                       'Total:',
-                      style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600, color: Colors.grey),
+                      style: const TextStyle(
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey),
                     ),
                     Expanded(
                       child: Text(
                         '\$${cart.cartSummary}',
                         textAlign: TextAlign.end,
-                        style: const TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold, color: Colors.teal),
+                        style: const TextStyle(
+                            fontSize: 30.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.teal),
                       ),
                     )
                   ],

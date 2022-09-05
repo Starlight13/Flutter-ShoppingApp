@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:shopping_app/components/lists/product_future_builder.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:shopping_app/components/lists/product_future_builder.dart';
 import 'package:shopping_app/models/product/product_short.dart';
 
+// VR: name of class and filename are different
 class ProductSearchDelegate extends SearchDelegate {
   @override
   List<Widget>? buildActions(BuildContext context) {

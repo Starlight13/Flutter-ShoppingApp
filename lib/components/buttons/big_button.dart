@@ -13,9 +13,11 @@ class BigButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // VR: I propose to create your custom Container with GestureDetector instead of changing theme of TextButton
     return TextButton(
       style: ButtonStyle(
-        padding: MaterialStateProperty.all(const EdgeInsets.symmetric(vertical: 15.0)),
+        padding: MaterialStateProperty.all(
+            const EdgeInsets.symmetric(vertical: 15.0)),
         backgroundColor: MaterialStateProperty.all(Colors.teal),
         shape: MaterialStateProperty.all(
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),

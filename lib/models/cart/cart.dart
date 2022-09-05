@@ -1,7 +1,8 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shopping_app/models/cart/cart_item.dart';
-import 'package:collection/collection.dart';
 
+// VR: hmm, Cart is actually not a model as it contains a lot of logic
 class Cart extends ChangeNotifier {
   final List<CartItem> _productsInCart = [];
 
@@ -15,12 +16,16 @@ class Cart extends ChangeNotifier {
 
   int get cartSummary {
     if (productsCount != 0) {
-      return _productsInCart.map((e) => e.product.price * e.quantity).reduce((a, b) => a + b);
+      // VR: good job!!! (with using functional approach here)
+      return _productsInCart
+          .map((e) => e.product.price * e.quantity)
+          .reduce((a, b) => a + b);
     }
     return 0;
   }
 
-  UnmodifiableListView<CartItem> get productsInCart => UnmodifiableListView(_productsInCart);
+  UnmodifiableListView<CartItem> get productsInCart =>
+      UnmodifiableListView(_productsInCart);
 
   void removeItemFromCart(CartItem cartItem) {
     _productsInCart.remove(cartItem);
@@ -36,7 +41,8 @@ class Cart extends ChangeNotifier {
   }
 
   CartItem? findCartItem(CartItem cartItem) {
-    return _productsInCart.firstWhereOrNull((element) => element.product == cartItem.product);
+    return _productsInCart
+        .firstWhereOrNull((element) => element.product == cartItem.product);
   }
 
   void addToCart(CartItem newCartItem) {

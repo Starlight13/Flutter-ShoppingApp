@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shopping_app/components/item_counter.dart';
-import 'package:shopping_app/models/cart/cart_item.dart';
-
-import 'package:shopping_app/models/product/product_short.dart';
 import 'package:shopping_app/components/buttons/big_button.dart';
+import 'package:shopping_app/components/item_counter.dart';
 import 'package:shopping_app/models/cart/cart.dart';
+import 'package:shopping_app/models/cart/cart_item.dart';
+import 'package:shopping_app/models/product/product_short.dart';
 
+// VR: fix warning
 class AddToCartToolbar extends StatelessWidget {
   AddToCartToolbar({
     required this.product,

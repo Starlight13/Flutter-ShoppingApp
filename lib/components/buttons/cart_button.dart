@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shopping_app/screens/cart_screen.dart';
 import 'package:shopping_app/models/cart/cart.dart';
+import 'package:shopping_app/screens/cart_screen.dart';
 
+// VR: fix warning
 class CartButton extends StatelessWidget {
   CartButton({
     this.controller,
@@ -37,6 +38,7 @@ class CartButton extends StatelessWidget {
     );
   }
 
+  // VR: avoid function widget, use Class Widget instead
   Widget getItemCounter(BuildContext context) {
     final Widget countIdicator = Container(
       padding: const EdgeInsets.all(1),

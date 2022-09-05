@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shopping_app/constants.dart';
-
 import 'package:shopping_app/models/product/product_short.dart';
 import 'package:shopping_app/screens/product_details_screen.dart';
 
+// VR: move to constants or do we need this constant at all?
 const cardTextStyle = TextStyle(fontWeight: FontWeight.bold);
 
 class ProductsHorizontalList extends StatelessWidget {

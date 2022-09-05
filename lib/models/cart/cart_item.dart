@@ -1,5 +1,6 @@
 import 'package:shopping_app/models/product/product_short.dart';
 
+// VR: it's not a model as well
 class CartItem {
   int quantity;
   final ProductShort _product;
@@ -9,7 +10,8 @@ class CartItem {
   ProductShort get product => _product;
 
   @override
-  bool operator ==(other) => other is CartItem && other.product.id == product.id;
+  bool operator ==(other) =>
+      other is CartItem && other.product.id == product.id;
 
   @override
   int get hashCode => Object.hash(quantity.hashCode, product.hashCode);

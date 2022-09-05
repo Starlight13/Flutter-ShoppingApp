@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:shopping_app/models/product/product_short.dart';
 import 'package:http/http.dart' as http;
+import 'package:shopping_app/models/product/product_short.dart';
 
 class Category {
   final String _name;
@@ -12,6 +12,7 @@ class Category {
 
   Future<List<ProductShort>> get products async {
     try {
+      // VR: it's too messy to mix Network service with a models. Will cover it with MVVM
       final url = Uri.https('dummyjson.com', 'products/category/$name');
 
       final http.Response response = await http.get(url);

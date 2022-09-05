@@ -14,6 +14,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<Cart>(
+      // VR: I wouldn't recommend using singletons.
+      // Let's use MVVM + Provider architecture, can discuss that on a sync.
       create: (context) => Cart.instance,
       child: MaterialApp(
         theme: ThemeData(

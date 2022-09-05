@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shopping_app/components/lists/items/cart_row.dart';
 
+// VR: fix this, use package instead of relative path
 import '../../models/cart/cart.dart';
 
 class CartList extends StatelessWidget {

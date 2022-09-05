@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
-import 'package:shopping_app/models/cart/cart_item.dart';
-
-import 'package:shopping_app/models/cart/cart.dart';
 import 'package:shopping_app/components/item_counter.dart';
+import 'package:shopping_app/models/cart/cart.dart';
+import 'package:shopping_app/models/cart/cart_item.dart';
 
 import '../../../constants.dart';
 
@@ -14,6 +13,7 @@ class CartRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // VR: fix this warning, unnecessary check
     if (item != null) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
