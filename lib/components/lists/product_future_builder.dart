@@ -16,11 +16,12 @@ class ProductFutureBuilder extends StatelessWidget {
     return FutureBuilder<List<ProductShort>>(
       future: future,
       builder: (context, snapshot) {
+        Widget child;
         if (snapshot.connectionState == ConnectionState.done) {
           if (!snapshot.hasError) {
-            return ProductsList(products: snapshot.data);
+            child = ProductsList(products: snapshot.data);
           } else {
-            return Center(
+            child = Center(
               child: Text(
                 'An error occurred: ${snapshot.error}',
                 textAlign: TextAlign.center,
@@ -28,10 +29,16 @@ class ProductFutureBuilder extends StatelessWidget {
             );
           }
         } else {
-          return const Center(
+          child = const Center(
             child: CircularProgressIndicator(),
           );
         }
+
+        return AnimatedSwitcher(
+          duration: const Duration(milliseconds: 500),
+          switchInCurve: Curves.easeIn,
+          child: child,
+        );
       },
     );
   }

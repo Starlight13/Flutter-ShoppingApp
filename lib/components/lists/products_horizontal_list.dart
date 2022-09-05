@@ -6,21 +6,35 @@ import 'package:shopping_app/screens/product_details_screen.dart';
 
 const cardTextStyle = TextStyle(fontWeight: FontWeight.bold);
 
-class ProductsHorizontalList extends StatelessWidget {
+class ProductsHorizontalList extends StatefulWidget {
   const ProductsHorizontalList({this.products, Key? key}) : super(key: key);
-
   final List<ProductShort>? products;
+
+  @override
+  State<ProductsHorizontalList> createState() => _ProductsHorizontalListState();
+}
+
+class _ProductsHorizontalListState extends State<ProductsHorizontalList> {
+  double horizontalOffset = 0.0;
+
+  late final ScrollController _scrollController = ScrollController()
+    ..addListener(() {
+      setState(() {
+        horizontalOffset = _scrollController.position.pixels /
+            _scrollController.position.viewportDimension;
+      });
+    });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 300.0,
+      height: 320.0,
       child: ListView.builder(
+        controller: _scrollController,
         scrollDirection: Axis.horizontal,
-        shrinkWrap: true,
-        itemCount: products?.length ?? 0,
+        itemCount: widget.products?.length ?? 0,
         itemBuilder: (context, index) {
-          final product = products![index];
+          final product = widget.products![index];
           return Padding(
             padding: const EdgeInsets.all(10.0),
             child: GestureDetector(
@@ -45,7 +59,10 @@ class ProductsHorizontalList extends StatelessWidget {
                         width: 200,
                         child: Image.network(
                           product.thumbnail,
-                          alignment: FractionalOffset.topCenter,
+                          alignment: Alignment(
+                            (horizontalOffset - index * 0.5),
+                            0,
+                          ),
                           fit: BoxFit.cover,
                         ),
                       ),

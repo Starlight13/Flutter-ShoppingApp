@@ -27,18 +27,40 @@ class CategoryRow extends StatelessWidget {
         FutureBuilder<List<ProductShort>>(
           future: category.products,
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
-              return ProductsHorizontalList(
-                products: snapshot.data,
+            Widget child;
+            if (snapshot.connectionState == ConnectionState.done &&
+                snapshot.hasData) {
+              child = TweenAnimationBuilder<Offset>(
+                duration: const Duration(seconds: 1),
+                curve: Curves.easeIn,
+                tween: Tween<Offset>(
+                  begin: const Offset(1.0, 0),
+                  end: Offset.zero,
+                ),
+                builder: ((context, value, child) {
+                  return Transform.translate(
+                    offset: value,
+                    child: ProductsHorizontalList(
+                      products: snapshot.data,
+                    ),
+                  );
+                }),
+              );
+            } else {
+              child = const SizedBox(
+                height: 300,
+                child: Center(
+                  child: CircularProgressIndicator(
+                    color: Colors.teal,
+                  ),
+                ),
               );
             }
-            return const SizedBox(
-              height: 300,
-              child: Center(
-                child: CircularProgressIndicator(
-                  color: Colors.teal,
-                ),
-              ),
+
+            return AnimatedSwitcher(
+              duration: const Duration(milliseconds: 500),
+              switchInCurve: Curves.easeIn,
+              child: child,
             );
           },
         )

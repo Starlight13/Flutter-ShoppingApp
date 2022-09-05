@@ -12,19 +12,27 @@ class CategoriesList extends StatelessWidget {
     return FutureBuilder<List<Category>>(
       future: Category.getAllCategories(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
-          return ListView.builder(
+        Widget child;
+        if (snapshot.connectionState == ConnectionState.done &&
+            snapshot.hasData) {
+          child = ListView.builder(
             itemCount: snapshot.data?.length ?? 0,
             itemBuilder: (context, index) {
               final category = snapshot.data![index];
               return CategoryRow(category: category);
             },
           );
+        } else {
+          child = const Center(
+            child: CircularProgressIndicator(
+              color: Colors.teal,
+            ),
+          );
         }
-        return const Center(
-          child: CircularProgressIndicator(
-            color: Colors.teal,
-          ),
+        return AnimatedSwitcher(
+          duration: const Duration(milliseconds: 500),
+          switchInCurve: Curves.easeIn,
+          child: child,
         );
       },
     );

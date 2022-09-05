@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:shopping_app/components/buttons/square_button.dart';
 
 class ItemCounter extends StatefulWidget {
-  const ItemCounter({required this.onChange, this.initialCount, this.size = 30.0, Key? key}) : super(key: key);
+  const ItemCounter({
+    required this.onChange,
+    this.initialCount,
+    this.size = 30.0,
+    Key? key,
+  }) : super(key: key);
 
   final int? initialCount;
   final Function(int) onChange;
@@ -12,7 +17,8 @@ class ItemCounter extends StatefulWidget {
   State<ItemCounter> createState() => _ItemCounterState();
 }
 
-class _ItemCounterState extends State<ItemCounter> with SingleTickerProviderStateMixin {
+class _ItemCounterState extends State<ItemCounter>
+    with SingleTickerProviderStateMixin {
   late int qty;
   bool isPlus = true;
 
@@ -24,18 +30,22 @@ class _ItemCounterState extends State<ItemCounter> with SingleTickerProviderStat
   late final Animation<Offset> _plusOffsetAnimation = Tween<Offset>(
     begin: Offset.zero,
     end: const Offset(0.5, 0.0),
-  ).animate(CurvedAnimation(
-    parent: _controller,
-    curve: Curves.elasticIn,
-  ));
+  ).animate(
+    CurvedAnimation(
+      parent: _controller,
+      curve: Curves.elasticIn,
+    ),
+  );
 
   late final Animation<Offset> _minusOffsetAnimation = Tween<Offset>(
     begin: Offset.zero,
     end: const Offset(-0.5, 0.0),
-  ).animate(CurvedAnimation(
-    parent: _controller,
-    curve: Curves.elasticIn,
-  ));
+  ).animate(
+    CurvedAnimation(
+      parent: _controller,
+      curve: Curves.elasticIn,
+    ),
+  );
 
   @override
   void initState() {
@@ -84,7 +94,8 @@ class _ItemCounterState extends State<ItemCounter> with SingleTickerProviderStat
             child: Text(
               '$qty',
               textAlign: TextAlign.center,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+              style:
+                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
             ),
           ),
         ),
