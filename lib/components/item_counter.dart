@@ -22,34 +22,28 @@ class _ItemCounterState extends State<ItemCounter>
   late int qty;
   bool isPlus = true;
 
-  late final AnimationController _controller = AnimationController(
-    duration: const Duration(milliseconds: 300),
-    vsync: this,
-  );
+  late final AnimationController _controller;
 
-  late final Animation<Offset> _plusOffsetAnimation = Tween<Offset>(
-    begin: Offset.zero,
-    end: const Offset(0.5, 0.0),
-  ).animate(
-    CurvedAnimation(
-      parent: _controller,
-      curve: Curves.elasticIn,
-    ),
-  );
-
-  late final Animation<Offset> _minusOffsetAnimation = Tween<Offset>(
-    begin: Offset.zero,
-    end: const Offset(-0.5, 0.0),
-  ).animate(
-    CurvedAnimation(
-      parent: _controller,
-      curve: Curves.elasticIn,
-    ),
-  );
+  late final Function() _offsetAnimation;
 
   @override
   void initState() {
     super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+
+    _offsetAnimation = () => Tween<Offset>(
+          begin: Offset.zero,
+          end: Offset(isPlus ? 0.5 : -0.5, 0.0),
+        ).animate(
+          CurvedAnimation(
+            parent: _controller,
+            curve: Curves.elasticIn,
+          ),
+        );
+
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         _controller.reverse();
@@ -74,9 +68,7 @@ class _ItemCounterState extends State<ItemCounter>
           buttonSize: widget.size,
           onPressed: () {
             if (qty - 1 >= 1) {
-              setState(() {
-                isPlus = false;
-              });
+              isPlus = false;
               _controller.forward();
               widget.onChange(--qty);
             }
@@ -88,7 +80,7 @@ class _ItemCounterState extends State<ItemCounter>
           ),
         ),
         SlideTransition(
-          position: isPlus ? _plusOffsetAnimation : _minusOffsetAnimation,
+          position: _offsetAnimation(),
           child: SizedBox(
             width: widget.size + 10.0,
             child: Text(
@@ -102,9 +94,7 @@ class _ItemCounterState extends State<ItemCounter>
         SquareButton(
           buttonSize: widget.size,
           onPressed: () {
-            setState(() {
-              isPlus = true;
-            });
+            isPlus = true;
             _controller.forward();
             widget.onChange(++qty);
           },

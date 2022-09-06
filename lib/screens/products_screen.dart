@@ -23,14 +23,14 @@ class ProductScreen extends StatelessWidget {
             ),
             leading: IconButton(
               onPressed: () {
-                showSearch(context: context, delegate: ProductSearchDelegate());
+                showSearch(context: context, delegate: ProductSearch());
               },
               icon: const Icon(Icons.search),
             ),
             actions: [CartButton()],
           ),
           body: const SafeArea(
-            child: Padding(padding: EdgeInsets.only(top: 20.0), child: CategoriesList()),
+            child: CategoriesList(),
           ),
         );
       },

@@ -15,7 +15,7 @@ class CategoryRow extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 10.0),
+          padding: const EdgeInsets.only(top: 20.0, left: 10.0),
           child: Text(
             category.name.capitalize(),
             style: const TextStyle(

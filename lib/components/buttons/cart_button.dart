@@ -5,8 +5,9 @@ import 'package:shopping_app/models/cart/cart.dart';
 
 class CartButton extends StatelessWidget {
   CartButton({
+    Key? key,
     this.controller,
-  }) {
+  }) : super(key: key) {
     if (controller != null) {
       _animationOffset = Tween<Offset>(
         begin: const Offset(0.0, 0.0),
@@ -17,7 +18,7 @@ class CartButton extends StatelessWidget {
 
   final AnimationController? controller;
 
-  Animation<Offset>? _animationOffset;
+  late final Animation<Offset>? _animationOffset;
 
   @override
   Widget build(BuildContext context) {

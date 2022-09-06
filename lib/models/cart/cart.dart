@@ -15,12 +15,15 @@ class Cart extends ChangeNotifier {
 
   int get cartSummary {
     if (productsCount != 0) {
-      return _productsInCart.map((e) => e.product.price * e.quantity).reduce((a, b) => a + b);
+      return _productsInCart
+          .map((e) => e.product.price * e.quantity)
+          .reduce((a, b) => a + b);
     }
     return 0;
   }
 
-  UnmodifiableListView<CartItem> get productsInCart => UnmodifiableListView(_productsInCart);
+  UnmodifiableListView<CartItem> get productsInCart =>
+      UnmodifiableListView(_productsInCart);
 
   void removeItemFromCart(CartItem cartItem) {
     _productsInCart.remove(cartItem);
@@ -36,7 +39,8 @@ class Cart extends ChangeNotifier {
   }
 
   CartItem? findCartItem(CartItem cartItem) {
-    return _productsInCart.firstWhereOrNull((element) => element.product == cartItem.product);
+    return _productsInCart
+        .firstWhereOrNull((element) => element.product == cartItem.product);
   }
 
   void addToCart(CartItem newCartItem) {

@@ -4,8 +4,6 @@ import 'package:shopping_app/constants.dart';
 import 'package:shopping_app/models/product/product_short.dart';
 import 'package:shopping_app/screens/product_details_screen.dart';
 
-const cardTextStyle = TextStyle(fontWeight: FontWeight.bold);
-
 class ProductsHorizontalList extends StatefulWidget {
   const ProductsHorizontalList({this.products, Key? key}) : super(key: key);
   final List<ProductShort>? products;
@@ -75,12 +73,13 @@ class _ProductsHorizontalListState extends State<ProductsHorizontalList> {
                           Flexible(
                             child: Text(
                               product.title,
-                              style: cardTextStyle,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ),
                           Text(
                             '\$${product.price}',
-                            style: cardTextStyle,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),

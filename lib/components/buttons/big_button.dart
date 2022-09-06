@@ -13,16 +13,20 @@ class BigButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
-      style: ButtonStyle(
-        padding: MaterialStateProperty.all(const EdgeInsets.symmetric(vertical: 15.0)),
-        backgroundColor: MaterialStateProperty.all(Colors.teal),
-        shape: MaterialStateProperty.all(
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 15.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10.0),
+          color: Colors.teal,
+        ),
+        child: Text(
+          buttonText,
+          style: buttonTextStyle,
+          textAlign: TextAlign.center,
         ),
       ),
-      onPressed: onPressed,
-      child: Text(buttonText, style: buttonTextStyle),
     );
   }
 }

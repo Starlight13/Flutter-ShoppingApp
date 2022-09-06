@@ -1,23 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:shopping_app/components/add_to_cart_toolbar.dart';
+import 'package:shopping_app/components/buttons/cart_button.dart';
 import 'package:shopping_app/components/image_carousel.dart';
 import 'package:shopping_app/constants.dart';
 import 'package:shopping_app/models/product/product.dart';
 import 'package:shopping_app/models/product/product_short.dart';
-import 'package:shopping_app/components/add_to_cart_toolbar.dart';
-import 'package:shopping_app/components/buttons/cart_button.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
   static const id = 'product_details_screen';
 
   final int productId;
 
-  const ProductDetailsScreen({required this.productId, Key? key}) : super(key: key);
+  const ProductDetailsScreen({
+    required this.productId,
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<ProductDetailsScreen> createState() => _ProductDetailsScreenState();
 }
 
-class _ProductDetailsScreenState extends State<ProductDetailsScreen> with SingleTickerProviderStateMixin {
+class _ProductDetailsScreenState extends State<ProductDetailsScreen>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(
     duration: const Duration(milliseconds: 500),
     vsync: this,
@@ -77,15 +81,19 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> with Single
                             .toList(),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10.0, horizontal: 15.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 20.0),
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 20.0),
                               child: Text(
                                 product.title,
-                                style: const TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                    fontSize: 30.0,
+                                    fontWeight: FontWeight.bold),
                               ),
                             ),
                             Text(

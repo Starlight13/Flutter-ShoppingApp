@@ -6,7 +6,6 @@ import 'package:shopping_app/models/cart/cart.dart';
 
 class CartScreen extends StatelessWidget {
   static const id = 'cart_screen';
-  final foo = {};
 
   CartScreen({
     Key? key,
@@ -20,9 +19,7 @@ class CartScreen extends StatelessWidget {
           appBar: AppBar(
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.pop(context);
-              },
+              onPressed: () => Navigator.pop(context),
             ),
             title: const Text(
               'My cart',
@@ -36,7 +33,8 @@ class CartScreen extends StatelessWidget {
                     builder: (context) {
                       return AlertDialog(
                         title: const Text('Clear cart'),
-                        content: const Text('Are you sure you want to clear cart?'),
+                        content:
+                            const Text('Are you sure you want to clear cart?'),
                         actions: [
                           TextButton(
                             onPressed: () {
@@ -79,13 +77,19 @@ class CartScreen extends StatelessWidget {
                   children: [
                     const Text(
                       'Total:',
-                      style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600, color: Colors.grey),
+                      style: const TextStyle(
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey),
                     ),
                     Expanded(
                       child: Text(
                         '\$${cart.cartSummary}',
                         textAlign: TextAlign.end,
-                        style: const TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold, color: Colors.teal),
+                        style: const TextStyle(
+                            fontSize: 30.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.teal),
                       ),
                     )
                   ],
