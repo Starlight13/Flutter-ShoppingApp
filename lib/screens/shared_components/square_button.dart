@@ -27,7 +27,10 @@ class SquareButton extends StatelessWidget {
         padding: MaterialStateProperty.all(const EdgeInsets.all(0)),
         minimumSize: MaterialStateProperty.all(Size(buttonSize, buttonSize)),
         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(6.0), side: BorderSide(width: 1, color: borderColor)),
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(6.0),
+            side: BorderSide(width: 1, color: borderColor),
+          ),
         ),
       ),
       child: child,

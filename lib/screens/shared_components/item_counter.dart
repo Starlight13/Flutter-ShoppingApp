@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shopping_app/components/buttons/square_button.dart';
+import 'package:shopping_app/screens/shared_components/square_button.dart';
 
 class ItemCounter extends StatefulWidget {
   const ItemCounter({
