@@ -27,11 +27,18 @@ class Product {
   }
 
   String get shortDescription {
-    const maxChars = 70;
-    if (description.length > maxChars) {
-      return '${description.substring(0, maxChars)}...';
+    return trimText(description, 70);
+  }
+
+  String get shortTitle {
+    return trimText(title, 25);
+  }
+
+  String trimText(String text, int maxChars) {
+    if (text.length > maxChars) {
+      return '${text.substring(0, maxChars)}...';
     }
-    return description;
+    return text;
   }
 
   @override
