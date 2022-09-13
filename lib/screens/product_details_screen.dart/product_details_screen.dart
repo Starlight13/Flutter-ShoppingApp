@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shopping_app/constants.dart';
 import 'package:shopping_app/screens/product_details_screen.dart/components/image_carousel.dart';
 import 'package:shopping_app/screens/shared_components/item_counter.dart';
 import 'package:shopping_app/screens/shared_components/cart_button.dart';
@@ -22,7 +21,6 @@ class ProductDetailsScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text(
           'Product Details',
-          style: appBarTitleStyle,
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),

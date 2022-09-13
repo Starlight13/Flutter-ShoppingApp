@@ -10,6 +10,7 @@ import 'package:shopping_app/services/locator_service.dart';
 import 'package:shopping_app/viewmodels/category_view_model.dart';
 import 'package:shopping_app/screens/shared_components/progress_indicator.dart';
 import 'package:shopping_app/viewmodels/product_search_view_model.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class ProductsScreen extends StatelessWidget {
   static String id = 'productsScreen';
@@ -23,11 +24,9 @@ class ProductsScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text(
           'Shopping app',
-          style: appBarTitleStyle,
         ),
         leading: IconButton(
           onPressed: () {
-            //TODO: Show search
             showSearch(
               context: context,
               delegate: ProductSearchViewModel(productsRepo: sl.get()),
@@ -87,8 +86,8 @@ class ProductsScreen extends StatelessWidget {
                                           child: SizedBox(
                                             height: 200,
                                             width: 200,
-                                            child: Image.network(
-                                              product.thumbnail,
+                                            child: CachedNetworkImage(
+                                              imageUrl: product.thumbnail,
                                               fit: BoxFit.cover,
                                             ),
                                           ),

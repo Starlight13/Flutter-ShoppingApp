@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:shopping_app/models/product.dart';
 import 'package:shopping_app/repositories/products_repo.dart';
+import 'package:shopping_app/screens/shared_components/product_search_builder.dart';
 
-class ProductSearchViewModel extends SearchDelegate with ChangeNotifier {
+class ProductSearchViewModel extends SearchDelegate {
   final IProductsRepo _productsRepo;
-  List<Product> foundProducts = [];
 
   ProductSearchViewModel({required IProductsRepo productsRepo})
       : _productsRepo = productsRepo;
@@ -33,21 +32,15 @@ class ProductSearchViewModel extends SearchDelegate with ChangeNotifier {
 
   @override
   Widget buildResults(BuildContext context) {
-    getSearchData(query);
-    return ListView.builder(
-      itemCount: foundProducts.length,
-      itemBuilder: ((context, index) => ListTile(
-            title: Text(foundProducts[index].title),
-          )),
+    return ProductSearchBuilder(
+      future: _productsRepo.searchProducts(query: query),
     );
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    return Container();
-  }
-
-  void getSearchData(String query) async {
-    foundProducts = await _productsRepo.searchProducts(query: query);
+    return ProductSearchBuilder(
+      future: _productsRepo.searchProducts(query: query),
+    );
   }
 }
