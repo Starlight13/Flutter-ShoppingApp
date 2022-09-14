@@ -6,8 +6,9 @@ import 'package:shopping_app/services/locator_service.dart';
 import 'package:shopping_app/viewmodels/cart_view_model.dart';
 import 'package:shopping_app/viewmodels/category_view_model.dart';
 import 'package:shopping_app/viewmodels/product_view_model.dart';
-
 import 'package:shopping_app/screens/product_details_screen.dart/product_details_screen.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() {
   setupLocator();
@@ -35,6 +36,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
       theme: ThemeData(
         primaryColor: Colors.white,
         appBarTheme: AppBarTheme(

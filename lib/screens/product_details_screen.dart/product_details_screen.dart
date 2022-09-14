@@ -7,6 +7,7 @@ import 'package:shopping_app/screens/shared_components/cart_button.dart';
 import 'package:shopping_app/screens/shared_components/progress_indicator.dart';
 import 'package:shopping_app/viewmodels/cart_view_model.dart';
 import 'package:shopping_app/viewmodels/product_view_model.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ProductDetailsScreen extends StatelessWidget {
   static const id = 'product_details_screen';
@@ -20,8 +21,8 @@ class ProductDetailsScreen extends StatelessWidget {
     final viewModel = _setProductViewModel(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Product Details',
+        title: Text(
+          AppLocalizations.of(context)!.productDetails,
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -117,9 +118,9 @@ class ProductDetailsScreen extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(10.0),
                                 color: Colors.teal,
                               ),
-                              child: const Text(
-                                'Add to cart',
-                                style: TextStyle(
+                              child: Text(
+                                AppLocalizations.of(context)!.addToCart,
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 18.0,
                                   fontWeight: FontWeight.w500,

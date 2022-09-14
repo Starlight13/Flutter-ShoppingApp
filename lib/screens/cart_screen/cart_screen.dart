@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:shopping_app/screens/shared_components/item_counter.dart';
 import 'package:shopping_app/viewmodels/cart_view_model.dart';
 import 'package:shopping_app/constants.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CartScreen extends StatelessWidget {
   static const id = 'cart_screen';
@@ -22,8 +23,8 @@ class CartScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'My cart',
+        title: Text(
+          AppLocalizations.of(context)!.cartTitle,
         ),
         actions: [
           IconButton(
@@ -32,24 +33,28 @@ class CartScreen extends StatelessWidget {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: const Text('Clear cart'),
-                    content: const Text('Are you sure you wont to clear cart?'),
+                    title: Text(
+                      AppLocalizations.of(context)!.clearCartTitle,
+                    ),
+                    content: Text(
+                      AppLocalizations.of(context)!.clearCartContent,
+                    ),
                     actions: [
                       TextButton(
                         onPressed: () {
                           viewModel.clearCart();
                           Navigator.pop(context);
                         },
-                        child: const Text(
-                          'I\'m sure',
-                          style: TextStyle(color: Colors.teal),
+                        child: Text(
+                          AppLocalizations.of(context)!.confirm,
+                          style: const TextStyle(color: Colors.teal),
                         ),
                       ),
                       TextButton(
                         onPressed: () => Navigator.pop(context),
-                        child: const Text(
-                          'Cancel',
-                          style: TextStyle(
+                        child: Text(
+                          AppLocalizations.of(context)!.cancel,
+                          style: const TextStyle(
                             color: Colors.teal,
                             fontWeight: FontWeight.bold,
                           ),
@@ -177,9 +182,9 @@ class CartScreen extends StatelessWidget {
                   ),
                   Row(
                     children: [
-                      const Text(
-                        'Total:',
-                        style: TextStyle(
+                      Text(
+                        '${AppLocalizations.of(context)!.total}:',
+                        style: const TextStyle(
                           fontSize: 20.0,
                           fontWeight: FontWeight.w600,
                           color: Colors.grey,

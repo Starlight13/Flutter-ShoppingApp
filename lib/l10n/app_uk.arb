@@ -1,0 +1,10 @@
+{
+    "cartTitle": "Мій кошик",
+    "total": "Всього",
+    "clearCartTitle": "Очистити кошик",
+    "clearCartContent": "Ви впевнені, що хочете очистити кошик?",
+    "confirm": "Так",
+    "cancel": "Відміна",
+    "addToCart": "До кошика",
+    "productDetails": "Опис товару"
+}
