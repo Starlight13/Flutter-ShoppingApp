@@ -1,0 +1,10 @@
+{
+    "cartTitle": "My Cart",
+    "total": "Total",
+    "clearCartTitle": "Clear cart",
+    "clearCartContent": "Are you sure you want to clear cart?",
+    "confirm": "I'm sure",
+    "cancel": "Cancel",
+    "addToCart": "Add to cart",
+    "productDetails": "Product details"
+}
