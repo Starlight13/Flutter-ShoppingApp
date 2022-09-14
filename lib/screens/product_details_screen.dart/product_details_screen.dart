@@ -19,10 +19,11 @@ class ProductDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final viewModel = _setProductViewModel(context);
+    final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          AppLocalizations.of(context)!.productDetails,
+          localizations.productDetails,
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -119,7 +120,7 @@ class ProductDetailsScreen extends StatelessWidget {
                                 color: Colors.teal,
                               ),
                               child: Text(
-                                AppLocalizations.of(context)!.addToCart,
+                                localizations.addToCart,
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 18.0,

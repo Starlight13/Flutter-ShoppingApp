@@ -88,7 +88,9 @@ class _HorizontalProductsListState extends State<HorizontalProductsList> {
                       children: [
                         Flexible(
                           child: Text(
-                            product.shortTitle,
+                            product.title,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                             ),
@@ -104,8 +106,10 @@ class _HorizontalProductsListState extends State<HorizontalProductsList> {
                     ),
                   ),
                   Text(
-                    product.shortDescription,
+                    product.description,
                     style: descriptionTextStyle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   )
                 ],
               ),

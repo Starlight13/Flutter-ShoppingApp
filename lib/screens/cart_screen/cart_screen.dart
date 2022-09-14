@@ -17,6 +17,7 @@ class CartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<ICartViewModel>();
+    final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -24,7 +25,7 @@ class CartScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          AppLocalizations.of(context)!.cartTitle,
+          localizations.cartTitle,
         ),
         actions: [
           IconButton(
@@ -34,10 +35,10 @@ class CartScreen extends StatelessWidget {
                 builder: (BuildContext context) {
                   return AlertDialog(
                     title: Text(
-                      AppLocalizations.of(context)!.clearCartTitle,
+                      localizations.clearCartTitle,
                     ),
                     content: Text(
-                      AppLocalizations.of(context)!.clearCartContent,
+                      localizations.clearCartContent,
                     ),
                     actions: [
                       TextButton(
@@ -46,14 +47,14 @@ class CartScreen extends StatelessWidget {
                           Navigator.pop(context);
                         },
                         child: Text(
-                          AppLocalizations.of(context)!.confirm,
+                          localizations.confirm,
                           style: const TextStyle(color: Colors.teal),
                         ),
                       ),
                       TextButton(
                         onPressed: () => Navigator.pop(context),
                         child: Text(
-                          AppLocalizations.of(context)!.cancel,
+                          localizations.cancel,
                           style: const TextStyle(
                             color: Colors.teal,
                             fontWeight: FontWeight.bold,
@@ -135,8 +136,10 @@ class CartScreen extends StatelessWidget {
                                   height: 5.0,
                                 ),
                                 Text(
-                                  item.product.shortDescription,
+                                  item.product.description,
                                   style: descriptionTextStyle,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                                 Row(
                                   mainAxisAlignment:
@@ -183,7 +186,7 @@ class CartScreen extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        '${AppLocalizations.of(context)!.total}:',
+                        '${localizations.total}:',
                         style: const TextStyle(
                           fontSize: 20.0,
                           fontWeight: FontWeight.w600,

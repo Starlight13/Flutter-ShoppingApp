@@ -26,21 +26,6 @@ class Product {
     );
   }
 
-  String get shortDescription {
-    return trimText(description, 70);
-  }
-
-  String get shortTitle {
-    return trimText(title, 25);
-  }
-
-  String trimText(String text, int maxChars) {
-    if (text.length > maxChars) {
-      return '${text.substring(0, maxChars)}...';
-    }
-    return text;
-  }
-
   @override
   bool operator ==(Object other) => other is Product && id == other.id;
 
