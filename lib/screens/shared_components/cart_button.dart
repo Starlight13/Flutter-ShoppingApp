@@ -35,18 +35,6 @@ class _CartButtonState extends State<CartButton>
   }
 
   @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void launchAnimation() {
-    if (mounted) {
-      _controller.forward();
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<ICartViewModel>();
     viewModel.addListener(() {
@@ -90,5 +78,11 @@ class _CartButtonState extends State<CartButton>
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 }

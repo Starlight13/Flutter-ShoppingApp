@@ -3,6 +3,9 @@ import 'package:shopping_app/repositories/category_repo.dart';
 import 'package:shopping_app/repositories/products_repo.dart';
 import 'package:shopping_app/services/category_service.dart';
 import 'package:shopping_app/services/product_service.dart';
+import 'package:shopping_app/viewmodels/cart_view_model.dart';
+import 'package:shopping_app/viewmodels/category_view_model.dart';
+import 'package:shopping_app/viewmodels/product_view_model.dart';
 
 final GetIt sl = GetIt.I;
 
@@ -17,5 +20,17 @@ void setupLocator() {
   );
   sl.registerLazySingleton<IProductsRepo>(
     () => ProductsRepo(productService: sl.get()),
+  );
+
+  sl.registerLazySingleton<ICategoryViewModel>(
+    () => CategoryViewModel(categoryRepo: sl.get(), productsRepo: sl.get()),
+  );
+
+  sl.registerLazySingleton<IProductViewModel>(
+    () => ProductViewModel(),
+  );
+
+  sl.registerLazySingleton<ICartViewModel>(
+    () => CartViewModel(),
   );
 }

@@ -22,13 +22,19 @@ class HorizontalProductsList extends StatefulWidget {
 class _HorizontalProductsListState extends State<HorizontalProductsList> {
   double horizontalOffset = 0.0;
 
-  late final ScrollController _scrollController = ScrollController()
-    ..addListener(() {
-      setState(() {
-        horizontalOffset = _scrollController.position.pixels /
-            _scrollController.position.viewportDimension;
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController()
+      ..addListener(() {
+        setState(() {
+          horizontalOffset = _scrollController.position.pixels /
+              _scrollController.position.viewportDimension;
+        });
       });
-    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,5 +114,11 @@ class _HorizontalProductsListState extends State<HorizontalProductsList> {
         );
       },
     );
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 }

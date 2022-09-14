@@ -55,12 +55,6 @@ class _ItemCounterState extends State<ItemCounter>
   }
 
   @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Row(
       children: [
@@ -105,5 +99,11 @@ class _ItemCounterState extends State<ItemCounter>
         ),
       ],
     );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 }

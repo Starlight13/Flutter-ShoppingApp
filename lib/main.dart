@@ -15,16 +15,13 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider<ICartViewModel>(
-          create: (_) => CartViewModel(),
+          create: (_) => sl.get(),
         ),
         ChangeNotifierProvider<ICategoryViewModel>(
-          create: (_) => CategoryViewModel(
-            categoryRepo: sl.get(),
-            productsRepo: sl.get(),
-          ),
+          create: (_) => sl.get(),
         ),
         ChangeNotifierProvider<IProductViewModel>(
-          create: (_) => ProductViewModel(),
+          create: (_) => sl.get(),
         ),
       ],
       child: const MyApp(),

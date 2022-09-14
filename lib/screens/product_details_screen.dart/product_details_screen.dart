@@ -1,10 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shopping_app/screens/product_details_screen.dart/components/image_carousel.dart';
 import 'package:shopping_app/screens/shared_components/item_counter.dart';
 import 'package:shopping_app/screens/shared_components/cart_button.dart';
+import 'package:shopping_app/screens/shared_components/progress_indicator.dart';
 import 'package:shopping_app/viewmodels/cart_view_model.dart';
-import 'package:shopping_app/viewmodels/category_view_model.dart';
 import 'package:shopping_app/viewmodels/product_view_model.dart';
 
 class ProductDetailsScreen extends StatelessWidget {
@@ -37,7 +38,11 @@ class ProductDetailsScreen extends StatelessWidget {
               ImageCarousel(
                 images: viewModel.product.images
                     .map(
-                      (e) => Image.network(e),
+                      (e) => CachedNetworkImage(
+                        imageUrl: e,
+                        placeholder: (context, url) =>
+                            const CenteredProgressIndicator(),
+                      ),
                     )
                     .toList(),
               ),
@@ -138,11 +143,9 @@ class ProductDetailsScreen extends StatelessWidget {
 
   IProductViewModel _setProductViewModel(BuildContext context) {
     final viewModel = context.watch<IProductViewModel>();
-    final productId = ModalRoute.of(context)?.settings.arguments as int;
-    final currentProduct =
-        context.read<ICategoryViewModel>().findById(productId);
-    viewModel.setProduct(currentProduct);
-    viewModel.setQuantity(1);
+    viewModel.setProductWithId(
+      id: ModalRoute.of(context)?.settings.arguments as int,
+    );
     return viewModel;
   }
 }

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
@@ -37,6 +38,7 @@ class CartScreen extends StatelessWidget {
                       TextButton(
                         onPressed: () {
                           viewModel.clearCart();
+                          Navigator.pop(context);
                         },
                         child: const Text(
                           'I\'m sure',
@@ -105,8 +107,8 @@ class CartScreen extends StatelessWidget {
                             width: 120,
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(30.0),
-                              child: Image.network(
-                                item.product.thumbnail,
+                              child: CachedNetworkImage(
+                                imageUrl: item.product.thumbnail,
                                 fit: BoxFit.cover,
                               ),
                             ),
