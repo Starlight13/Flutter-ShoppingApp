@@ -42,10 +42,12 @@ class ProductsScreen extends StatelessWidget {
                   itemCount: viewModel.categoriesCount,
                   itemBuilder: (context, index) {
                     final category = viewModel.categories[index];
+                    late final productFuture =
+                        viewModel.fetchProductsForCategory(category);
                     return StickyHeaderBuilder(
                       builder: (context, stuckAmount) {
                         return Material(
-                          elevation: stuckAmount > 0 ? 0 : 10,
+                          elevation: stuckAmount >= 0 ? 0 : 10,
                           child: Container(
                             width: MediaQuery.of(context).size.width,
                             padding: const EdgeInsets.only(
@@ -66,8 +68,18 @@ class ProductsScreen extends StatelessWidget {
                       },
                       content: SizedBox(
                         height: 300.0,
-                        child: HorizontalProductsList(
-                          category: category,
+                        child: FutureBuilder(
+                          future: productFuture,
+                          builder: ((context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.done) {
+                              return HorizontalProductsList(
+                                category: category,
+                              );
+                            } else {
+                              return const CenteredProgressIndicator();
+                            }
+                          }),
                         ),
                       ),
                     );
