@@ -45,7 +45,6 @@ dependencies:
   get_it: ^7.2.0
   cached_network_image: ^3.2.1       
   sticky_headers: ^0.3.0+2
-  get:
 
 dev_dependencies:
   flutter_test:
