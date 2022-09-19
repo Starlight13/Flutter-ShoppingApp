@@ -49,28 +49,38 @@ class _CartButtonState extends State<CartButton>
       },
       icon: Stack(
         children: [
-          const Icon(Icons.shopping_cart),
+          const Hero(
+            tag: 'cart',
+            child: Icon(Icons.shopping_cart),
+          ),
           Positioned(
             right: 0,
             child: SlideTransition(
               position: _animationOffset,
-              child: Container(
-                padding: const EdgeInsets.all(1),
-                decoration: BoxDecoration(
-                  color: Colors.teal,
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                constraints: const BoxConstraints(
-                  minWidth: 12,
-                  minHeight: 12,
-                ),
-                child: Text(
-                  '${viewModel.productsCount}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 8,
+              child: Hero(
+                tag: 'counter',
+                child: Material(
+                  color: Colors.transparent,
+                  child: Container(
+                    padding: const EdgeInsets.all(1),
+                    decoration: BoxDecoration(
+                      color: Colors.teal,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    constraints: const BoxConstraints(
+                      minWidth: 12,
+                      minHeight: 12,
+                    ),
+                    child: Text(
+                      '${viewModel.productsCount}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 8,
+                        decoration: TextDecoration.none,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                  textAlign: TextAlign.center,
                 ),
               ),
             ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shopping_app/screens/cart_screen/cart_screen.dart';
 import 'package:shopping_app/screens/products_screen/products_screen.dart';
+import 'package:shopping_app/screens/splash_screen/splash_screen.dart';
 import 'package:shopping_app/services/locator_service.dart';
 import 'package:shopping_app/viewmodels/cart_view_model.dart';
 import 'package:shopping_app/viewmodels/category_view_model.dart';
@@ -59,8 +60,9 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      initialRoute: ProductsScreen.id,
+      initialRoute: SplashScreen.id,
       routes: {
+        SplashScreen.id: (context) => const SplashScreen(),
         ProductsScreen.id: (context) => const ProductsScreen(),
         ProductDetailsScreen.id: (context) => const ProductDetailsScreen(),
         CartScreen.id: ((context) => const CartScreen()),
