@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shopping_app/constants.dart';
 import 'package:shopping_app/models/category.dart';
+import 'package:shopping_app/models/circle_transition_arguments.dart';
 import 'package:shopping_app/screens/product_details_screen.dart/product_details_screen.dart';
-import 'package:shopping_app/screens/products_screen/components/circle_transition_clipper.dart';
 import 'package:shopping_app/screens/shared_components/progress_indicator.dart';
 import 'package:shopping_app/viewmodels/category_view_model.dart';
 
@@ -51,45 +51,12 @@ class _HorizontalProductsListState extends State<HorizontalProductsList> {
           child: GestureDetector(
             onTapUp: (details) {
               viewModel.setSelectedCategory(widget.category);
-              Navigator.of(context).push(
-                PageRouteBuilder(
-                  pageBuilder: ((context, animation, secondaryAnimation) {
-                    return const ProductDetailsScreen();
-                  }),
-                  transitionDuration: const Duration(milliseconds: 500),
-                  reverseTransitionDuration: const Duration(milliseconds: 400),
-                  transitionsBuilder: (context, animation, _, child) {
-                    double beginRadius = 0.0;
-                    double endRadius = MediaQuery.of(context).size.height / 1.2;
-
-                    var tween = Tween(begin: beginRadius, end: endRadius);
-
-                    var opacityTween = Tween(begin: 0.0, end: 1.0);
-
-                    var opacityTweenAnimation = animation.drive(opacityTween);
-                    var radiusTweenAnimation = animation.drive(tween);
-
-                    return ClipPath(
-                      clipper: CircleTransitionClipper(
-                        center: details.globalPosition,
-                        radius: radiusTweenAnimation.value,
-                      ),
-                      child: Stack(
-                        children: [
-                          Container(
-                            color: Colors.white,
-                            height: MediaQuery.of(context).size.height,
-                            width: MediaQuery.of(context).size.width,
-                          ),
-                          Opacity(
-                            opacity: opacityTweenAnimation.value,
-                            child: child,
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                  settings: RouteSettings(arguments: product.id),
+              Navigator.pushNamed(
+                context,
+                ProductDetailsScreen.id,
+                arguments: CircleTransitionArguments(
+                  circleStartCenter: details.globalPosition,
+                  productId: product.id,
                 ),
               );
             },
