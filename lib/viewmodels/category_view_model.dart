@@ -11,6 +11,7 @@ abstract class ICategoryViewModel with ChangeNotifier {
   Category? get selectedCategory;
   Product findById(int id);
   void setSelectedCategory(Category? category);
+  Future fetchProductsForCategory(Category category);
 }
 
 class CategoryViewModel with ChangeNotifier implements ICategoryViewModel {
@@ -53,14 +54,18 @@ class CategoryViewModel with ChangeNotifier implements ICategoryViewModel {
   void _fetchCategories() async {
     _setLoadingState(true);
     _categories = await _categoryRepo.getAllCategories();
-    for (final category in _categories) {
+    _setLoadingState(false);
+  }
+
+  @override
+  Future fetchProductsForCategory(Category category) async {
+    if (category.products.isEmpty) {
       category.products.addAll(
         await _productsRepo.getProductsByCategory(
           categoryName: category.name,
         ),
       );
     }
-    _setLoadingState(false);
   }
 
   @override

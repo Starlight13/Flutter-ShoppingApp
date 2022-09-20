@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shopping_app/models/circle_transition_arguments.dart';
 import 'package:shopping_app/screens/cart_screen/cart_screen.dart';
+import 'package:shopping_app/screens/products_screen/components/circle_transition_clipper.dart';
 import 'package:shopping_app/screens/products_screen/products_screen.dart';
+import 'package:shopping_app/screens/unknown_page.dart';
 import 'package:shopping_app/services/locator_service.dart';
 import 'package:shopping_app/viewmodels/cart_view_model.dart';
 import 'package:shopping_app/viewmodels/category_view_model.dart';
@@ -62,8 +65,71 @@ class MyApp extends StatelessWidget {
       initialRoute: ProductsScreen.id,
       routes: {
         ProductsScreen.id: (context) => const ProductsScreen(),
-        ProductDetailsScreen.id: (context) => const ProductDetailsScreen(),
         CartScreen.id: ((context) => const CartScreen()),
+      },
+      onGenerateRoute: (settings) {
+        if (settings.name == ProductDetailsScreen.id) {
+          try {
+            final arguments = settings.arguments as CircleTransitionArguments;
+            return PageRouteBuilder(
+              pageBuilder: ((context, animation, secondaryAnimation) {
+                return const ProductDetailsScreen();
+              }),
+              transitionDuration: const Duration(milliseconds: 500),
+              reverseTransitionDuration: const Duration(milliseconds: 400),
+              transitionsBuilder: (context, animation, _, child) {
+                return LayoutBuilder(
+                  builder: ((context, constraints) {
+                    Offset screenCenter = Offset(
+                      constraints.maxWidth / 2,
+                      constraints.maxHeight / 2,
+                    );
+
+                    var radiusTween =
+                        Tween(begin: 0.0, end: constraints.maxHeight / 1.5);
+                    var circleOffsetTween = Tween(
+                      begin: arguments.circleStartCenter,
+                      end: screenCenter,
+                    );
+
+                    var radiusTweenAnimation = animation.drive(radiusTween);
+                    var centerOffsetTweenAnimation =
+                        animation.drive(circleOffsetTween);
+
+                    return ClipPath(
+                      clipper: CircleTransitionClipper(
+                        center: centerOffsetTweenAnimation.value,
+                        radius: radiusTweenAnimation.value,
+                      ),
+                      child: Stack(
+                        children: [
+                          Container(
+                            color: Colors.white,
+                            height: constraints.maxHeight,
+                            width: constraints.maxWidth,
+                          ),
+                          Opacity(
+                            opacity: animation.value,
+                            child: child,
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                );
+              },
+              settings: RouteSettings(arguments: arguments.product),
+            );
+          } catch (error) {
+            if (error is TypeError) {
+              return MaterialPageRoute(
+                builder: (_) => const ProductDetailsScreen(),
+                settings: settings,
+              );
+            }
+          }
+        }
+        return MaterialPageRoute(builder: (_) => const UnknownPage());
       },
     );
   }

@@ -1,9 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shopping_app/models/product.dart';
 import 'package:shopping_app/screens/product_details_screen.dart/components/image_carousel.dart';
 import 'package:shopping_app/screens/shared_components/item_counter.dart';
 import 'package:shopping_app/screens/shared_components/cart_button.dart';
+import 'package:shopping_app/screens/shared_components/primary_action_button.dart';
 import 'package:shopping_app/screens/shared_components/progress_indicator.dart';
 import 'package:shopping_app/viewmodels/cart_view_model.dart';
 import 'package:shopping_app/viewmodels/product_view_model.dart';
@@ -19,10 +21,11 @@ class ProductDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final viewModel = _setProductViewModel(context);
+    final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          AppLocalizations.of(context)!.productDetails,
+          localizations.productDetails,
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -94,7 +97,7 @@ class ProductDetailsScreen extends StatelessWidget {
                           width: 30.0,
                         ),
                         Expanded(
-                          child: GestureDetector(
+                          child: PrimaryActionButton(
                             onTap: () {
                               final cartViewModel =
                                   context.read<ICartViewModel>();
@@ -111,23 +114,7 @@ class ProductDetailsScreen extends StatelessWidget {
                                 ),
                               );
                             },
-                            child: Container(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 15.0),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                color: Colors.teal,
-                              ),
-                              child: Text(
-                                AppLocalizations.of(context)!.addToCart,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18.0,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
+                            text: localizations.addToCart,
                           ),
                         ),
                       ],
@@ -144,8 +131,8 @@ class ProductDetailsScreen extends StatelessWidget {
 
   IProductViewModel _setProductViewModel(BuildContext context) {
     final viewModel = context.watch<IProductViewModel>();
-    viewModel.setProductWithId(
-      id: ModalRoute.of(context)?.settings.arguments as int,
+    viewModel.setProduct(
+      ModalRoute.of(context)?.settings.arguments as Product,
     );
     return viewModel;
   }
