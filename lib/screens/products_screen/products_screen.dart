@@ -7,6 +7,7 @@ import 'package:shopping_app/services/locator_service.dart';
 import 'package:shopping_app/viewmodels/category_view_model.dart';
 import 'package:shopping_app/screens/shared_components/progress_indicator.dart';
 import 'package:shopping_app/viewmodels/product_search_view_model.dart';
+import 'package:sticky_headers/sticky_headers.dart';
 
 class ProductsScreen extends StatelessWidget {
   static String id = 'productsScreen';
@@ -41,26 +42,46 @@ class ProductsScreen extends StatelessWidget {
                   itemCount: viewModel.categoriesCount,
                   itemBuilder: (context, index) {
                     final category = viewModel.categories[index];
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 20.0, left: 10.0),
-                          child: Text(
-                            category.name.capitalize(),
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20.0,
+                    late final productFuture =
+                        viewModel.fetchProductsForCategory(category);
+                    return StickyHeaderBuilder(
+                      builder: (context, stuckAmount) {
+                        return Material(
+                          elevation: stuckAmount >= 0 ? 0 : 10,
+                          child: Container(
+                            width: MediaQuery.of(context).size.width,
+                            padding: const EdgeInsets.only(
+                              top: 20.0,
+                              left: 10.0,
+                              bottom: 10.0,
+                            ),
+                            color: Colors.white,
+                            child: Text(
+                              category.name.capitalize(),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20.0,
+                              ),
                             ),
                           ),
+                        );
+                      },
+                      content: SizedBox(
+                        height: 300.0,
+                        child: FutureBuilder(
+                          future: productFuture,
+                          builder: ((context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.done) {
+                              return HorizontalProductsList(
+                                category: category,
+                              );
+                            } else {
+                              return const CenteredProgressIndicator();
+                            }
+                          }),
                         ),
-                        SizedBox(
-                          height: 320.0,
-                          child: HorizontalProductsList(
-                            category: category,
-                          ),
-                        )
-                      ],
+                      ),
                     );
                   },
                 ),

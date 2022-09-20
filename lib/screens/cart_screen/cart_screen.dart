@@ -17,6 +17,7 @@ class CartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<ICartViewModel>();
+    final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -24,7 +25,7 @@ class CartScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          AppLocalizations.of(context)!.cartTitle,
+          localizations.cartTitle,
         ),
         actions: [
           IconButton(
@@ -34,10 +35,10 @@ class CartScreen extends StatelessWidget {
                 builder: (BuildContext context) {
                   return AlertDialog(
                     title: Text(
-                      AppLocalizations.of(context)!.clearCartTitle,
+                      localizations.clearCartTitle,
                     ),
                     content: Text(
-                      AppLocalizations.of(context)!.clearCartContent,
+                      localizations.clearCartContent,
                     ),
                     actions: [
                       TextButton(
@@ -46,14 +47,14 @@ class CartScreen extends StatelessWidget {
                           Navigator.pop(context);
                         },
                         child: Text(
-                          AppLocalizations.of(context)!.confirm,
+                          localizations.confirm,
                           style: const TextStyle(color: Colors.teal),
                         ),
                       ),
                       TextButton(
                         onPressed: () => Navigator.pop(context),
                         child: Text(
-                          AppLocalizations.of(context)!.cancel,
+                          localizations.cancel,
                           style: const TextStyle(
                             color: Colors.teal,
                             fontWeight: FontWeight.bold,
@@ -105,66 +106,84 @@ class CartScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      child: Row(
-                        children: [
-                          SizedBox(
-                            height: 120,
-                            width: 120,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(30.0),
-                              child: CachedNetworkImage(
-                                imageUrl: item.product.thumbnail,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 10.0,
-                          ),
-                          Flexible(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  item.product.title,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
+                      child: Builder(
+                        builder: (context) {
+                          return Row(
+                            children: [
+                              SizedBox(
+                                height: 120,
+                                width: 120,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                  child: CachedNetworkImage(
+                                    imageUrl: item.product.thumbnail,
+                                    fit: BoxFit.cover,
                                   ),
                                 ),
-                                const SizedBox(
-                                  height: 5.0,
-                                ),
-                                Text(
-                                  item.product.shortDescription,
-                                  style: descriptionTextStyle,
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                              ),
+                              const SizedBox(
+                                width: 10.0,
+                              ),
+                              Flexible(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      '\$${item.product.price}',
+                                      item.product.title,
                                       style: const TextStyle(
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 20.0,
                                       ),
                                     ),
-                                    ItemCounter(
-                                      size: 20.0,
-                                      onChange: (newQty) {
-                                        viewModel.changeItemQty(
-                                          newQty: newQty,
-                                          cartItem: item,
-                                        );
-                                      },
-                                      initialCount: item.quantity,
+                                    const SizedBox(
+                                      height: 5.0,
+                                    ),
+                                    Text(
+                                      item.product.description,
+                                      style: descriptionTextStyle,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          '\$${item.product.price}',
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20.0,
+                                          ),
+                                        ),
+                                        ItemCounter(
+                                          size: 20.0,
+                                          onChange: (newQty) =>
+                                              viewModel.changeItemQty(
+                                            newQty: newQty,
+                                            cartItem: item,
+                                          ),
+                                          onDelete: () {
+                                            Slidable.of(context)?.dismiss(
+                                              ResizeRequest(
+                                                const Duration(
+                                                  milliseconds: 300,
+                                                ),
+                                                () => viewModel
+                                                    .removeItemFromCart(
+                                                  cartItem: item,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          initialCount: item.quantity,
+                                        )
+                                      ],
                                     )
                                   ],
-                                )
-                              ],
-                            ),
-                          ),
-                        ],
+                                ),
+                              ),
+                            ],
+                          );
+                        },
                       ),
                     ),
                   );
@@ -183,7 +202,7 @@ class CartScreen extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        '${AppLocalizations.of(context)!.total}:',
+                        '${localizations.total}:',
                         style: const TextStyle(
                           fontSize: 20.0,
                           fontWeight: FontWeight.w600,

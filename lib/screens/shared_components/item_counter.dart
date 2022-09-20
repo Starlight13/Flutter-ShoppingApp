@@ -6,12 +6,14 @@ class ItemCounter extends StatefulWidget {
     required this.onChange,
     this.initialCount,
     this.size = 30.0,
+    this.onDelete,
     Key? key,
   }) : super(key: key);
 
   final int? initialCount;
   final Function(int) onChange;
   final double size;
+  final void Function()? onDelete;
 
   @override
   State<ItemCounter> createState() => _ItemCounterState();
@@ -58,19 +60,25 @@ class _ItemCounterState extends State<ItemCounter>
   Widget build(BuildContext context) {
     return Row(
       children: [
-        SquareButton(
-          buttonSize: widget.size,
-          onPressed: () {
-            if (qty - 1 >= 1) {
-              isPlus = false;
-              _controller.forward();
-              widget.onChange(--qty);
-            }
-          },
-          buttonColor: Colors.white,
-          child: const Icon(
-            Icons.remove,
-            color: Colors.teal,
+        AnimatedOpacity(
+          opacity: qty == 1 && widget.onDelete == null ? 0.0 : 1.0,
+          duration: const Duration(milliseconds: 300),
+          child: SquareButton(
+            buttonSize: widget.size,
+            onPressed: () {
+              if (qty - 1 >= 1) {
+                isPlus = false;
+                _controller.forward();
+                widget.onChange(--qty);
+              } else if (widget.onDelete != null) {
+                widget.onDelete!();
+              }
+            },
+            buttonColor: Colors.white,
+            child: const Icon(
+              Icons.remove,
+              color: Colors.teal,
+            ),
           ),
         ),
         SlideTransition(

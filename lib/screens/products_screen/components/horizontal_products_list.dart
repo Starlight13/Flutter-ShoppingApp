@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shopping_app/constants.dart';
 import 'package:shopping_app/models/category.dart';
+import 'package:shopping_app/models/circle_transition_arguments.dart';
 import 'package:shopping_app/screens/product_details_screen.dart/product_details_screen.dart';
 import 'package:shopping_app/screens/shared_components/progress_indicator.dart';
 import 'package:shopping_app/viewmodels/category_view_model.dart';
@@ -48,12 +49,15 @@ class _HorizontalProductsListState extends State<HorizontalProductsList> {
         return Padding(
           padding: const EdgeInsets.all(10.0),
           child: GestureDetector(
-            onTap: () {
+            onTapUp: (details) {
               viewModel.setSelectedCategory(widget.category);
               Navigator.pushNamed(
                 context,
                 ProductDetailsScreen.id,
-                arguments: product.id,
+                arguments: CircleTransitionArguments(
+                  circleStartCenter: details.globalPosition,
+                  product: product,
+                ),
               );
             },
             child: SizedBox(
@@ -88,7 +92,9 @@ class _HorizontalProductsListState extends State<HorizontalProductsList> {
                       children: [
                         Flexible(
                           child: Text(
-                            product.shortTitle,
+                            product.title,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                             ),
@@ -104,8 +110,10 @@ class _HorizontalProductsListState extends State<HorizontalProductsList> {
                     ),
                   ),
                   Text(
-                    product.shortDescription,
+                    product.description,
                     style: descriptionTextStyle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   )
                 ],
               ),
