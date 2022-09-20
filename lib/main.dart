@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shopping_app/screens/cart_screen/cart_screen.dart';
 import 'package:shopping_app/screens/products_screen/products_screen.dart';
@@ -37,8 +36,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final baseTheme = ThemeData(brightness: Brightness.light);
-
     return MaterialApp(
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -51,20 +48,19 @@ class MyApp extends StatelessWidget {
         primaryColor: Colors.white,
         appBarTheme: AppBarTheme(
           backgroundColor: Colors.white,
-          titleTextStyle: GoogleFonts.raleway(
-            textStyle: const TextStyle(
-              fontSize: 20.0,
-              color: Colors.black,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0,
-            ),
+          titleTextStyle: const TextStyle(
+            fontFamily: 'Raleway',
+            fontSize: 20.0,
+            color: Colors.black,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0,
           ),
           elevation: 0,
           iconTheme: IconThemeData(
             color: Colors.black.withOpacity(0.9),
           ),
         ),
-        textTheme: GoogleFonts.montserratTextTheme(baseTheme.textTheme),
+        fontFamily: 'Montserrat',
       ),
       initialRoute: SplashScreen.id,
       routes: {
