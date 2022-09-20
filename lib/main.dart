@@ -4,6 +4,7 @@ import 'package:shopping_app/models/circle_transition_arguments.dart';
 import 'package:shopping_app/screens/cart_screen/cart_screen.dart';
 import 'package:shopping_app/screens/products_screen/components/circle_transition_clipper.dart';
 import 'package:shopping_app/screens/products_screen/products_screen.dart';
+import 'package:shopping_app/screens/splash_screen/splash_screen.dart';
 import 'package:shopping_app/screens/unknown_page.dart';
 import 'package:shopping_app/services/locator_service.dart';
 import 'package:shopping_app/viewmodels/cart_view_model.dart';
@@ -51,6 +52,7 @@ class MyApp extends StatelessWidget {
         appBarTheme: AppBarTheme(
           backgroundColor: Colors.white,
           titleTextStyle: const TextStyle(
+            fontFamily: 'Raleway',
             fontSize: 20.0,
             color: Colors.black,
             fontWeight: FontWeight.w600,
@@ -61,9 +63,11 @@ class MyApp extends StatelessWidget {
             color: Colors.black.withOpacity(0.9),
           ),
         ),
+        fontFamily: 'Montserrat',
       ),
-      initialRoute: ProductsScreen.id,
+      initialRoute: SplashScreen.id,
       routes: {
+        SplashScreen.id: (context) => const SplashScreen(),
         ProductsScreen.id: (context) => const ProductsScreen(),
         CartScreen.id: ((context) => const CartScreen()),
       },
