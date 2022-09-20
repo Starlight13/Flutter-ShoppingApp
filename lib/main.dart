@@ -69,52 +69,64 @@ class MyApp extends StatelessWidget {
       },
       onGenerateRoute: (settings) {
         if (settings.name == ProductDetailsScreen.id) {
-          final arguments = settings.arguments as CircleTransitionArguments;
-          return PageRouteBuilder(
-            pageBuilder: ((context, animation, secondaryAnimation) {
-              return const ProductDetailsScreen();
-            }),
-            transitionDuration: const Duration(milliseconds: 500),
-            reverseTransitionDuration: const Duration(milliseconds: 400),
-            transitionsBuilder: (context, animation, _, child) {
-              double beginRadius = 0.0;
-              double endRadius = MediaQuery.of(context).size.height / 1.5;
+          try {
+            final arguments = settings.arguments as CircleTransitionArguments;
+            return PageRouteBuilder(
+              pageBuilder: ((context, animation, secondaryAnimation) {
+                return const ProductDetailsScreen();
+              }),
+              transitionDuration: const Duration(milliseconds: 500),
+              reverseTransitionDuration: const Duration(milliseconds: 400),
+              transitionsBuilder: (context, animation, _, child) {
+                final screenSize = MediaQuery.of(context).size;
+                double beginRadius = 0.0;
+                double endRadius = screenSize.height / 1.5;
 
-              Offset screenCenter = Offset(
-                MediaQuery.of(context).size.width / 2,
-                MediaQuery.of(context).size.height / 2,
+                Offset screenCenter = Offset(
+                  screenSize.width / 2,
+                  screenSize.height / 2,
+                );
+
+                var radiusTween = Tween(begin: beginRadius, end: endRadius);
+                var centerOffsetTweeen = Tween(
+                  begin: arguments.circleStartCenter,
+                  end: screenCenter,
+                );
+
+                var radiusTweenAnimation = animation.drive(radiusTween);
+                var centerOffsetTweenAnimation =
+                    animation.drive(centerOffsetTweeen);
+
+                return ClipPath(
+                  clipper: CircleTransitionClipper(
+                    center: centerOffsetTweenAnimation.value,
+                    radius: radiusTweenAnimation.value,
+                  ),
+                  child: Stack(
+                    children: [
+                      Container(
+                        color: Colors.white,
+                        height: MediaQuery.of(context).size.height,
+                        width: MediaQuery.of(context).size.width,
+                      ),
+                      Opacity(
+                        opacity: animation.value,
+                        child: child,
+                      ),
+                    ],
+                  ),
+                );
+              },
+              settings: RouteSettings(arguments: arguments.product),
+            );
+          } catch (error) {
+            if (error is TypeError) {
+              return MaterialPageRoute(
+                builder: (_) => const ProductDetailsScreen(),
+                settings: settings,
               );
-
-              var radiusTween = Tween(begin: beginRadius, end: endRadius);
-              var centerOffsetTweeen =
-                  Tween(begin: arguments.circleStartCenter, end: screenCenter);
-
-              var radiusTweenAnimation = animation.drive(radiusTween);
-              var centerOffsetTweenAnimation =
-                  animation.drive(centerOffsetTweeen);
-
-              return ClipPath(
-                clipper: CircleTransitionClipper(
-                  center: centerOffsetTweenAnimation.value,
-                  radius: radiusTweenAnimation.value,
-                ),
-                child: Stack(
-                  children: [
-                    Container(
-                      color: Colors.white,
-                      height: MediaQuery.of(context).size.height,
-                      width: MediaQuery.of(context).size.width,
-                    ),
-                    Opacity(
-                      opacity: animation.value,
-                      child: child,
-                    ),
-                  ],
-                ),
-              );
-            },
-            settings: RouteSettings(arguments: arguments.productId),
-          );
+            }
+          }
         }
         return MaterialPageRoute(builder: (_) => const UnknownPage());
       },

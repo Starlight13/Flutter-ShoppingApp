@@ -56,7 +56,7 @@ class _HorizontalProductsListState extends State<HorizontalProductsList> {
                 ProductDetailsScreen.id,
                 arguments: CircleTransitionArguments(
                   circleStartCenter: details.globalPosition,
-                  productId: product.id,
+                  product: product,
                 ),
               );
             },
