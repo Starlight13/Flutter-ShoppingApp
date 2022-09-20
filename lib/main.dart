@@ -78,43 +78,44 @@ class MyApp extends StatelessWidget {
               transitionDuration: const Duration(milliseconds: 500),
               reverseTransitionDuration: const Duration(milliseconds: 400),
               transitionsBuilder: (context, animation, _, child) {
-                final screenSize = MediaQuery.of(context).size;
-                double beginRadius = 0.0;
-                double endRadius = screenSize.height / 1.5;
+                return LayoutBuilder(
+                  builder: ((context, constraints) {
+                    Offset screenCenter = Offset(
+                      constraints.maxWidth / 2,
+                      constraints.maxHeight / 2,
+                    );
 
-                Offset screenCenter = Offset(
-                  screenSize.width / 2,
-                  screenSize.height / 2,
-                );
+                    var radiusTween =
+                        Tween(begin: 0.0, end: constraints.maxHeight / 1.5);
+                    var circleOffsetTween = Tween(
+                      begin: arguments.circleStartCenter,
+                      end: screenCenter,
+                    );
 
-                var radiusTween = Tween(begin: beginRadius, end: endRadius);
-                var centerOffsetTweeen = Tween(
-                  begin: arguments.circleStartCenter,
-                  end: screenCenter,
-                );
+                    var radiusTweenAnimation = animation.drive(radiusTween);
+                    var centerOffsetTweenAnimation =
+                        animation.drive(circleOffsetTween);
 
-                var radiusTweenAnimation = animation.drive(radiusTween);
-                var centerOffsetTweenAnimation =
-                    animation.drive(centerOffsetTweeen);
-
-                return ClipPath(
-                  clipper: CircleTransitionClipper(
-                    center: centerOffsetTweenAnimation.value,
-                    radius: radiusTweenAnimation.value,
-                  ),
-                  child: Stack(
-                    children: [
-                      Container(
-                        color: Colors.white,
-                        height: MediaQuery.of(context).size.height,
-                        width: MediaQuery.of(context).size.width,
+                    return ClipPath(
+                      clipper: CircleTransitionClipper(
+                        center: centerOffsetTweenAnimation.value,
+                        radius: radiusTweenAnimation.value,
                       ),
-                      Opacity(
-                        opacity: animation.value,
-                        child: child,
+                      child: Stack(
+                        children: [
+                          Container(
+                            color: Colors.white,
+                            height: constraints.maxHeight,
+                            width: constraints.maxWidth,
+                          ),
+                          Opacity(
+                            opacity: animation.value,
+                            child: child,
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    );
+                  }),
                 );
               },
               settings: RouteSettings(arguments: arguments.product),
