@@ -1,10 +1,15 @@
 {
-    "cartTitle": "My Cart",
-    "total": "Total",
-    "clearCartTitle": "Clear cart",
-    "clearCartContent": "Are you sure you want to clear cart?",
-    "confirm": "I'm sure",
-    "cancel": "Cancel",
-    "addToCart": "Add to cart",
-    "productDetails": "Product details"
+  "addToCart": "Add to cart",
+  "cancel": "Cancel",
+  "cartTitle": "My Cart",
+  "clearCartContent": "Are you sure you want to clear cart?",
+  "clearCartTitle": "Clear cart",
+  "confirm": "I'm sure",
+  "createAccount": "Create account",
+  "email": "E-mail",
+  "logIn": "Log in",
+  "next": "Next",
+  "password": "Password",
+  "productDetails": "Product details",
+  "total": "Total"
 }

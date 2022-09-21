@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "425800908684",
+    "project_id": "flutter-shopping-app-69a13",
+    "storage_bucket": "flutter-shopping-app-69a13.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:425800908684:android:4c8879357d3e3c512060a9",
+        "android_client_info": {
+          "package_name": "com.olgarom.shopping_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "425800908684-86i2mj4nl2snhlpvmcv4ho4ua8tmeq0l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBrrbk99DpoflT6s9R9RytBucQYTF7JrY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "425800908684-86i2mj4nl2snhlpvmcv4ho4ua8tmeq0l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

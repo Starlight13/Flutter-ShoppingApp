@@ -1,21 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shopping_app/firebase_options.dart';
 import 'package:shopping_app/models/circle_transition_arguments.dart';
+import 'package:shopping_app/screens/auth_screen/auth_screen.dart';
 import 'package:shopping_app/screens/cart_screen/cart_screen.dart';
 import 'package:shopping_app/screens/products_screen/components/circle_transition_clipper.dart';
 import 'package:shopping_app/screens/products_screen/products_screen.dart';
 import 'package:shopping_app/screens/splash_screen/splash_screen.dart';
 import 'package:shopping_app/screens/unknown_page.dart';
 import 'package:shopping_app/services/locator_service.dart';
+import 'package:shopping_app/viewmodels/auth_view_model.dart';
 import 'package:shopping_app/viewmodels/cart_view_model.dart';
 import 'package:shopping_app/viewmodels/category_view_model.dart';
 import 'package:shopping_app/viewmodels/product_view_model.dart';
 import 'package:shopping_app/screens/product_details_screen.dart/product_details_screen.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+// ignore: depend_on_referenced_packages
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+void main() async {
   setupLocator();
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(
     MultiProvider(
       providers: [
@@ -28,6 +37,9 @@ void main() {
         ChangeNotifierProvider<IProductViewModel>(
           create: (_) => sl.get(),
         ),
+        ChangeNotifierProvider<IAuthViewModel>(
+          create: (_) => sl.get(),
+        )
       ],
       child: const MyApp(),
     ),
@@ -48,7 +60,7 @@ class MyApp extends StatelessWidget {
       ],
       supportedLocales: AppLocalizations.supportedLocales,
       theme: ThemeData(
-        primaryColor: Colors.white,
+        colorScheme: ThemeData().colorScheme.copyWith(primary: Colors.teal),
         appBarTheme: AppBarTheme(
           backgroundColor: Colors.white,
           titleTextStyle: const TextStyle(
@@ -70,6 +82,7 @@ class MyApp extends StatelessWidget {
         SplashScreen.id: (context) => const SplashScreen(),
         ProductsScreen.id: (context) => const ProductsScreen(),
         CartScreen.id: ((context) => const CartScreen()),
+        AuthScreen.id: ((context) => AuthScreen())
       },
       onGenerateRoute: (settings) {
         if (settings.name == ProductDetailsScreen.id) {

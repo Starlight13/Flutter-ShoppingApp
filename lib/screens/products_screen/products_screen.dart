@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shopping_app/extensions.dart';
+import 'package:shopping_app/screens/auth_screen/auth_screen.dart';
 import 'package:shopping_app/screens/products_screen/components/horizontal_products_list.dart';
 import 'package:shopping_app/screens/shared_components/cart_button.dart';
 import 'package:shopping_app/services/locator_service.dart';
@@ -8,6 +9,7 @@ import 'package:shopping_app/viewmodels/category_view_model.dart';
 import 'package:shopping_app/screens/shared_components/progress_indicator.dart';
 import 'package:shopping_app/viewmodels/product_search_view_model.dart';
 import 'package:sticky_headers/sticky_headers.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ProductsScreen extends StatelessWidget {
   static String id = 'productsScreen';
@@ -17,19 +19,47 @@ class ProductsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<ICategoryViewModel>();
+    final localizations = AppLocalizations.of(context)!;
     return Scaffold(
+      drawer: Drawer(
+        backgroundColor: Colors.teal,
+        child: SafeArea(
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      showSearch(
+                        context: context,
+                        delegate:
+                            ProductSearchViewModel(productsRepo: sl.get()),
+                      );
+                    },
+                    icon: const Icon(
+                      Icons.search,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, AuthScreen.id);
+                },
+                child: Text(
+                  localizations.logIn,
+                  style: const TextStyle(fontSize: 25.0, color: Colors.white),
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
       appBar: AppBar(
         title: const Text(
           'Shopping app',
-        ),
-        leading: IconButton(
-          onPressed: () {
-            showSearch(
-              context: context,
-              delegate: ProductSearchViewModel(productsRepo: sl.get()),
-            );
-          },
-          icon: const Icon(Icons.search),
         ),
         actions: const [CartButton()],
       ),

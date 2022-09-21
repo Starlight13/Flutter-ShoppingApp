@@ -1,10 +1,15 @@
 {
-    "cartTitle": "Мій кошик",
-    "total": "Всього",
-    "clearCartTitle": "Очистити кошик",
-    "clearCartContent": "Ви впевнені, що хочете очистити кошик?",
-    "confirm": "Так",
-    "cancel": "Відміна",
-    "addToCart": "До кошика",
-    "productDetails": "Опис товару"
+  "addToCart": "До кошика",
+  "cancel": "Відміна",
+  "cartTitle": "Мій кошик",
+  "clearCartContent": "Ви впевнені, що хочете очистити кошик?",
+  "clearCartTitle": "Очистити кошик",
+  "confirm": "Так",
+  "createAccount": "Створити акаунт",
+  "email": "Електронна пошта",
+  "logIn": "Авторизація",
+  "next": "Далі",
+  "password": "Пароль",
+  "productDetails": "Опис товару",
+  "total": "Всього"
 }
