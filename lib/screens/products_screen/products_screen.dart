@@ -5,6 +5,7 @@ import 'package:shopping_app/screens/auth_screen/auth_screen.dart';
 import 'package:shopping_app/screens/products_screen/components/horizontal_products_list.dart';
 import 'package:shopping_app/screens/shared_components/cart_button.dart';
 import 'package:shopping_app/services/locator_service.dart';
+import 'package:shopping_app/viewmodels/auth_view_model.dart';
 import 'package:shopping_app/viewmodels/category_view_model.dart';
 import 'package:shopping_app/screens/shared_components/progress_indicator.dart';
 import 'package:shopping_app/viewmodels/product_search_view_model.dart';
@@ -20,6 +21,7 @@ class ProductsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final viewModel = context.watch<ICategoryViewModel>();
     final localizations = AppLocalizations.of(context)!;
+    final authViewModel = context.watch<IAuthViewModel>();
     return Scaffold(
       drawer: Drawer(
         backgroundColor: Colors.teal,
@@ -44,14 +46,51 @@ class ProductsScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.pushNamed(context, AuthScreen.id);
-                },
-                child: Text(
-                  localizations.logIn,
-                  style: const TextStyle(fontSize: 25.0, color: Colors.white),
-                ),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                transitionBuilder: ((child, animation) {
+                  return SizeTransition(
+                    sizeFactor: animation,
+                    axis: Axis.vertical,
+                    axisAlignment: -1,
+                    child: Center(child: child),
+                  );
+                }),
+                child: authViewModel.isLoggedIn
+                    ? Column(
+                        children: [
+                          const CircleAvatar(
+                            child: Icon(Icons.person),
+                          ),
+                          authViewModel.isLoading
+                              ? const CenteredProgressIndicator()
+                              : GestureDetector(
+                                  onTap: () {
+                                    authViewModel.logOut();
+                                  },
+                                  child: const Text(
+                                    //TODO: translate
+                                    'Log out',
+                                    style: TextStyle(
+                                      fontSize: 25.0,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                )
+                        ],
+                      )
+                    : GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(context, AuthScreen.id);
+                        },
+                        child: Text(
+                          localizations.logIn,
+                          style: const TextStyle(
+                            fontSize: 25.0,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
               )
             ],
           ),

@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:http/http.dart' as http;
 import 'package:shopping_app/models/category.dart';
 import 'package:shopping_app/services/category_service.dart';
@@ -26,7 +25,7 @@ class CategoryRepo implements ICategoryRepo {
         throw Exception(response.body);
       }
     } catch (e) {
-      throw Exception(e);
+      return Future.delayed(Duration.zero, () => []);
     }
   }
 }

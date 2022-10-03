@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shopping_app/extensions.dart';
+import 'package:shopping_app/globals.dart';
 import 'package:shopping_app/repositories/auth_repo.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -9,29 +11,37 @@ abstract class IAuthViewModel with ChangeNotifier {
   AuthState get authState;
   String authScreenButtonText({required AppLocalizations localizations});
   User? get currentUser;
-  void authAction({required String email, required String password});
+  void authAction({
+    required String email,
+    required String password,
+  });
   String? get emailError;
   String? get passError;
   void setLoggedOutState();
+  void logOut();
+  bool get isLoading;
+  void resetPasswordWithEmail({required String email, onSuccess});
+  bool get isLoggedIn;
 }
 
 class AuthViewModel with ChangeNotifier implements IAuthViewModel {
   final IAuthRepo _authRepo;
-  AuthState _authState = AuthState.loggedOut;
-  late bool _loggedIn;
+  late AuthState _authState;
   String? _emailError;
   String? _passError;
+  bool _isLoading = false;
 
   AuthViewModel({required IAuthRepo authRepo}) : _authRepo = authRepo {
-    FirebaseAuth.instance.userChanges().listen((user) {
-      if (user != null) {
-        _loggedIn = true;
-      } else {
-        _loggedIn = false;
-      }
-      notifyListeners();
-    });
+    if (currentUser == null) {
+      _authState = AuthState.loggedOut;
+    } else {
+      _authState = AuthState.loggedIn;
+    }
+    notifyListeners();
   }
+
+  @override
+  bool get isLoading => _isLoading;
 
   @override
   AuthState get authState => _authState;
@@ -44,6 +54,86 @@ class AuthViewModel with ChangeNotifier implements IAuthViewModel {
 
   @override
   String? get passError => _passError;
+
+  @override
+  bool get isLoggedIn => _authState == AuthState.loggedIn;
+
+  @override
+  String authScreenButtonText({required AppLocalizations localizations}) {
+    switch (_authState) {
+      case AuthState.loggedOut:
+        return localizations.next;
+      case AuthState.enteredEmail:
+        return localizations.logIn;
+      case AuthState.createAccount:
+        return localizations.createAccount;
+      case AuthState.loggedIn:
+        return 'Logged in';
+    }
+  }
+
+  @override
+  void authAction({
+    required String email,
+    required String password,
+  }) {
+    _setEmailError(null);
+    _setPassError(null);
+    try {
+      switch (_authState) {
+        case AuthState.loggedOut:
+          if (_validateEmail(email: email)) _checkIfEmailInUse(email: email);
+          break;
+        case AuthState.enteredEmail:
+          if (_validateEmail(email: email) && password.isNotEmpty) {
+            _logIn(email: email, password: password);
+          }
+          break;
+        case AuthState.createAccount:
+          if (_validateEmail(email: email) &&
+              _validatePassword(password: password)) {
+            _createAccount(email: email, password: password);
+          }
+          break;
+        case AuthState.loggedIn:
+          break;
+      }
+    } on FirebaseAuthException catch (error) {
+      if (error.code == 'invalid-email') {
+        //TODO: translate
+        _showSnackBar(snackBarText: 'Invalid email', isError: true);
+      }
+    }
+  }
+
+  @override
+  void setLoggedOutState() {
+    _setAuthState(AuthState.loggedOut);
+  }
+
+  @override
+  void logOut() async {
+    _setLoading(true);
+    _authRepo.logOut();
+    _setAuthState(AuthState.loggedOut);
+    _showSnackBar(snackBarText: 'You have logged out', isError: false);
+    _setLoading(false);
+  }
+
+  @override
+  void resetPasswordWithEmail({required String email, onSuccess}) {
+    try {
+      _authRepo.sendResetPasswordEmail(email: email);
+      _showSnackBar(
+        snackBarText: 'A reset password link was sent to $email',
+        isError: false,
+      );
+    } on FirebaseAuthException catch (e) {
+      _handleFirebaseException(e);
+    } catch (e) {
+      _showSnackBar(snackBarText: e.toString(), isError: true);
+    }
+  }
 
   _setAuthState(AuthState authState) {
     _authState = authState;
@@ -61,55 +151,62 @@ class AuthViewModel with ChangeNotifier implements IAuthViewModel {
   }
 
   void _checkIfEmailInUse({required String email}) async {
-    if (await _authRepo.checkIfEmailInUse(email: email)) {
-      _setAuthState(AuthState.enteredEmail);
-    } else {
-      _setAuthState(AuthState.createAccount);
+    _setLoading(true);
+    try {
+      if (await _authRepo.checkIfEmailInUse(email: email)) {
+        _setAuthState(AuthState.enteredEmail);
+      } else {
+        _setAuthState(AuthState.createAccount);
+      }
+    } on FirebaseAuthException catch (e) {
+      _handleFirebaseException(e);
+    } catch (e) {
+      _showSnackBar(snackBarText: e.toString(), isError: true);
     }
+    _setLoading(false);
   }
 
   void _createAccount({required String email, required String password}) async {
-    final credential =
-        _authRepo.createAccount(email: email, password: password);
-  }
-
-  void _logIn({required String email, required String password}) {
-    //TODO: log in
-  }
-
-  @override
-  String authScreenButtonText({required AppLocalizations localizations}) {
-    switch (_authState) {
-      case AuthState.loggedOut:
-        return localizations.next;
-      case AuthState.enteredEmail:
-        return localizations.logIn;
-      case AuthState.createAccount:
-        return localizations.createAccount;
-      case AuthState.loggedIn:
-        return '';
+    _setLoading(true);
+    try {
+      final credential =
+          await _authRepo.createAccount(email: email, password: password);
+      if (credential != null) {
+        _setAuthState(AuthState.loggedIn);
+        _showSnackBar(
+          snackBarText: 'You have successfully created an account',
+          isError: false,
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      _handleFirebaseException(e);
+    } catch (e) {
+      _showSnackBar(snackBarText: e.toString(), isError: true);
     }
+    _setLoading(false);
   }
 
-  @override
-  void authAction({required String email, required String password}) {
-    switch (_authState) {
-      case AuthState.loggedOut:
-        if (_validateEmail(email: email)) _checkIfEmailInUse(email: email);
-        break;
-      case AuthState.enteredEmail:
-        if (_validateEmail(email: email) && password != null) {
-          _logIn(email: email, password: password);
-        }
-        break;
-      case AuthState.createAccount:
-        if (email != null && password != null) {
-          _createAccount(email: email, password: password);
-        }
-        break;
-      case AuthState.loggedIn:
-        break;
+  void _logIn({
+    required String email,
+    required String password,
+  }) async {
+    _setLoading(true);
+    try {
+      final credential =
+          await _authRepo.logIn(email: email, password: password);
+      if (credential != null) {
+        _setAuthState(AuthState.loggedIn);
+        _showSnackBar(
+          snackBarText: 'You have successfully logged in',
+          isError: false,
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      _handleFirebaseException(e);
+    } catch (e) {
+      _showSnackBar(snackBarText: e.toString(), isError: true);
     }
+    _setLoading(false);
   }
 
   bool _validateEmail({required String email}) {
@@ -123,8 +220,56 @@ class AuthViewModel with ChangeNotifier implements IAuthViewModel {
     return false;
   }
 
-  @override
-  void setLoggedOutState() {
-    _setAuthState(AuthState.loggedOut);
+  bool _validatePassword({required String password}) {
+    if (password.isEmpty) {
+      _setPassError('Please enter password');
+    } else if (password.characters.length < 8) {
+      _setPassError('Password should be at least 8 characters long');
+    } else if (!password.containsUppercase) {
+      _setPassError('Password should contain at least 1 uppercase letter');
+    } else if (!password.containsLowercase) {
+      _setPassError('Password should contain at least 1 lowercase letter');
+    } else if (!password.containsDigits) {
+      _setPassError('Password should contain at least 1 digit');
+    } else {
+      _setPassError(null);
+      return true;
+    }
+    return false;
+  }
+
+  void _setLoading(bool isLoading) {
+    _isLoading = isLoading;
+    notifyListeners();
+  }
+
+  void _handleFirebaseException(FirebaseAuthException authException) {
+    String errorDescription = 'Error occured';
+    switch (authException.code) {
+      case 'wrong-password':
+        errorDescription = 'The entered password is incorrect';
+        break;
+      case 'too-many-requests':
+        errorDescription =
+            'Access to this account has been temporarily disabled due to many failed login attempts';
+        break;
+      case 'invalid-email':
+      case 'auth/invalid-email':
+        errorDescription = 'The entered email is invalid';
+        break;
+      case 'weak-password':
+        errorDescription = 'The entered password is too weak';
+        break;
+    }
+    _showSnackBar(snackBarText: errorDescription, isError: true);
+  }
+
+  _showSnackBar({required String snackBarText, required bool isError}) {
+    snackbarKey.currentState?.showSnackBar(
+      SnackBar(
+        content: Text(snackBarText),
+        backgroundColor: isError ? Colors.red : Colors.teal,
+      ),
+    );
   }
 }

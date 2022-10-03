@@ -2,15 +2,42 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:shopping_app/screens/shared_components/primary_action_button.dart';
+import 'package:shopping_app/screens/shared_components/progress_indicator.dart';
+import 'package:shopping_app/services/locator_service.dart';
 import 'package:shopping_app/viewmodels/auth_view_model.dart';
 
-class AuthScreen extends StatelessWidget {
+class AuthScreen extends StatefulWidget {
   static String id = 'authorisation';
 
-  AuthScreen({super.key});
+  const AuthScreen({super.key});
 
+  @override
+  State<AuthScreen> createState() => _AuthScreenState();
+}
+
+class _AuthScreenState extends State<AuthScreen> {
   final _emailController = TextEditingController();
   final _passController = TextEditingController();
+  late IAuthViewModel _authViewModel;
+
+  void popListener() {
+    if (_authViewModel.authState == AuthState.loggedIn) {
+      Navigator.pop(context);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _authViewModel = sl.get();
+    _authViewModel.addListener(popListener);
+  }
+
+  @override
+  void dispose() {
+    _authViewModel.removeListener(popListener);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,30 +75,61 @@ class AuthScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              Visibility(
-                visible: authViewModel.authState == AuthState.enteredEmail ||
-                    authViewModel.authState == AuthState.createAccount,
-                child: Container(
-                  padding: const EdgeInsets.only(top: 20.0),
-                  child: SizedBox(
-                    width: 300.0,
-                    child: TextField(
-                      controller: _passController,
-                      obscureText: true,
-                      obscuringCharacter: '*',
-                      enableSuggestions: false,
-                      autocorrect: false,
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.key),
-                        hintText: localizations.password,
-                        border: const OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(10.0),
-                          ),
-                        ),
+              SizedBox(
+                width: 300.0,
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  transitionBuilder: (child, animation) {
+                    _passController.clear();
+                    return SizeTransition(
+                      sizeFactor: animation,
+                      axis: Axis.vertical,
+                      axisAlignment: -1,
+                      child: Container(
+                        padding: const EdgeInsets.only(top: 20.0),
+                        child: child,
                       ),
-                    ),
-                  ),
+                    );
+                  },
+                  child: authViewModel.authState == AuthState.enteredEmail ||
+                          authViewModel.authState == AuthState.createAccount
+                      ? Column(
+                          children: [
+                            TextField(
+                              controller: _passController,
+                              obscureText: true,
+                              enableSuggestions: false,
+                              autocorrect: false,
+                              decoration: InputDecoration(
+                                prefixIcon: const Icon(Icons.key),
+                                hintText: localizations.password,
+                                border: const OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(10.0),
+                                  ),
+                                ),
+                                errorText: authViewModel.passError,
+                                errorMaxLines: 2,
+                              ),
+                            ),
+                            Visibility(
+                              visible: authViewModel.authState ==
+                                  AuthState.enteredEmail,
+                              child: GestureDetector(
+                                onTap: () =>
+                                    _authViewModel.resetPasswordWithEmail(
+                                  email: _emailController.text,
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 10.0),
+                                  //TODO: translate
+                                  child: Text(localizations.forgotPassword),
+                                ),
+                              ),
+                            )
+                          ],
+                        )
+                      : null,
                 ),
               ),
               const SizedBox(
@@ -79,7 +137,6 @@ class AuthScreen extends StatelessWidget {
               ),
               PrimaryActionButton(
                 onTap: () {
-                  print(_emailController.text);
                   authViewModel.authAction(
                     email: _emailController.text,
                     password: _passController.text,
@@ -89,42 +146,15 @@ class AuthScreen extends StatelessWidget {
                   localizations: localizations,
                 ),
                 width: 300.0,
+              ),
+              const SizedBox(
+                height: 20.0,
+              ),
+              Visibility(
+                visible: _authViewModel.isLoading,
+                child: const CenteredProgressIndicator(),
               )
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class RectangleTextField extends StatelessWidget {
-  const RectangleTextField({
-    this.hint,
-    this.icon,
-    this.width = 300.0,
-    Key? key,
-  }) : super(key: key);
-
-  final String? hint;
-  final Icon? icon;
-  final double width;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 300.0,
-      child: TextField(
-        keyboardType: TextInputType.emailAddress,
-        enableSuggestions: false,
-        autocorrect: false,
-        decoration: InputDecoration(
-          prefixIcon: icon,
-          hintText: hint,
-          border: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(
-              Radius.circular(10.0),
-            ),
           ),
         ),
       ),

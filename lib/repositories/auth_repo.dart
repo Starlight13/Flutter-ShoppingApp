@@ -5,11 +5,21 @@ enum AuthenticationState { loggedOut, enteredEmail, createAccount, loggedIn }
 
 abstract class IAuthRepo {
   Future<bool> checkIfEmailInUse({required String email});
+
   Future<UserCredential>? createAccount({
     required String email,
     required String password,
   });
+
   User? getCurrentUser();
+  Future<UserCredential?> logIn({
+    required String email,
+    required String password,
+  });
+
+  void logOut();
+
+  void sendResetPasswordEmail({required String email});
 }
 
 class AuthRepo implements IAuthRepo {
@@ -22,31 +32,19 @@ class AuthRepo implements IAuthRepo {
     required String email,
     required String password,
   }) {
-    try {
-      return _authService.createUser(email: email, password: password);
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        print('The password provided is too weak.');
-      } else if (e.code == 'email-already-in-use') {
-        print('The account already exists for that email.');
-      }
-    } catch (e) {
-      print(e);
-    }
-    return null;
+    return _authService.createUser(email: email, password: password);
   }
 
   @override
   Future<bool> checkIfEmailInUse({required String email}) async {
     try {
       final list = await _authService.fetchSignInMethodsForEmail(email: email);
-      if (list.isNotEmpty) {
+      if (list != null && list.isNotEmpty) {
         return true;
       } else {
         return false;
       }
     } catch (error) {
-      print(error);
       return true;
     }
   }
@@ -54,5 +52,23 @@ class AuthRepo implements IAuthRepo {
   @override
   User? getCurrentUser() {
     return _authService.getCurrentUser();
+  }
+
+  @override
+  Future<UserCredential?> logIn({
+    required String email,
+    required String password,
+  }) async {
+    return await _authService.logIn(email: email, password: password);
+  }
+
+  @override
+  Future logOut() async {
+    return await _authService.logOut();
+  }
+
+  @override
+  Future sendResetPasswordEmail({required String email}) async {
+    return await _authService.sendPasswordResetEmail(email: email);
   }
 }
