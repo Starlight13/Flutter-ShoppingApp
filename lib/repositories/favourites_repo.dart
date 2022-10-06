@@ -6,7 +6,9 @@ import 'package:shopping_app/services/favourites_service.dart';
 
 abstract class IFavoutiresRepo {
   Future<List<Favourite>> getFavouritesForUser(String userId);
-  void addProductToFavourites({required Favourite favourite});
+  Future<DocumentReference<Map<String, dynamic>>> addProductToFavourites({
+    required Favourite favourite,
+  });
   Stream listenToFavourites(String userId);
   Future<void> removeFavourite({required Favourite favourite});
 }
@@ -33,7 +35,7 @@ class FavouritesRepo implements IFavoutiresRepo {
   }
 
   @override
-  Stream listenToFavourites(String userId) {
+  Stream<List<Favourite>> listenToFavourites(String userId) {
     _favouritesService
         .getFavouritesForUser(userId: userId)
         .listen((favSnapshot) {
@@ -48,8 +50,10 @@ class FavouritesRepo implements IFavoutiresRepo {
   }
 
   @override
-  void addProductToFavourites({required Favourite favourite}) {
-    _favouritesService.addProductToFavourites(favourite: favourite);
+  Future<DocumentReference<Map<String, dynamic>>> addProductToFavourites({
+    required Favourite favourite,
+  }) {
+    return _favouritesService.addProductToFavourites(favourite: favourite);
   }
 
   Future<QueryDocumentSnapshot<Map<String, dynamic>>?> getFavourite({

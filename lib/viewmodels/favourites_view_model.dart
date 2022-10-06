@@ -64,15 +64,26 @@ class FavouritesViewModel with ChangeNotifier implements IFavouritesViewModel {
   }
 
   @override
-  void addProductToFavourites(Product product) {
+  void addProductToFavourites(Product product) async {
     _setLoadingProduct(true);
     if (_authViewModel.isLoggedIn) {
-      _favoutiresRepo.addProductToFavourites(
-        favourite: Favourite(
-          userId: _authViewModel.currentUser!.uid,
-          productId: product.id,
-        ),
-      );
+      try {
+        await _favoutiresRepo.addProductToFavourites(
+          favourite: Favourite(
+            userId: _authViewModel.currentUser!.uid,
+            productId: product.id,
+          ),
+        );
+        _showSnackBar(
+          snackBarText: 'You have added ${product.title} to favourites',
+          isError: false,
+        );
+      } catch (error) {
+        _showSnackBar(
+          snackBarText: error.toString(),
+          isError: true,
+        );
+      }
     } else {
       _showSnackBar(
         snackBarText: 'Log in to add product to favourites',

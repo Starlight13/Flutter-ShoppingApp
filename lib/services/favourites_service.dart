@@ -5,7 +5,9 @@ abstract class IFavouritesService {
   Stream<QuerySnapshot<Map<String, dynamic>>> getFavouritesForUser({
     required String userId,
   });
-  void addProductToFavourites({required Favourite favourite});
+  Future<DocumentReference<Map<String, dynamic>>> addProductToFavourites({
+    required Favourite favourite,
+  });
   Future<QuerySnapshot<Map<String, dynamic>>> getFavourite({
     required String userId,
     required int productId,
@@ -28,8 +30,10 @@ class FavouritesService implements IFavouritesService {
   }
 
   @override
-  void addProductToFavourites({required Favourite favourite}) {
-    _favouritesCollectionReference.add(favourite.toFirestore());
+  Future<DocumentReference<Map<String, dynamic>>> addProductToFavourites({
+    required Favourite favourite,
+  }) {
+    return _favouritesCollectionReference.add(favourite.toFirestore());
   }
 
   @override
