@@ -122,7 +122,6 @@ class _AuthScreenState extends State<AuthScreen> {
                                 ),
                                 child: Padding(
                                   padding: const EdgeInsets.only(top: 10.0),
-                                  //TODO: translate
                                   child: Text(localizations.forgotPassword),
                                 ),
                               ),

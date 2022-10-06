@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shopping_app/extensions.dart';
 import 'package:shopping_app/screens/auth_screen/auth_screen.dart';
+import 'package:shopping_app/screens/favourites_screen/favourites_screen.dart';
 import 'package:shopping_app/screens/products_screen/components/horizontal_products_list.dart';
 import 'package:shopping_app/screens/shared_components/cart_button.dart';
 import 'package:shopping_app/services/locator_service.dart';
@@ -59,24 +60,17 @@ class ProductsScreen extends StatelessWidget {
                 child: authViewModel.isLoggedIn
                     ? Column(
                         children: [
-                          const CircleAvatar(
-                            child: Icon(Icons.person),
+                          DrawerItem(
+                            onTap: () => Navigator.pushNamed(
+                              context,
+                              FavouritesScreen.id,
+                            ),
+                            title: localizations.favourites,
                           ),
-                          authViewModel.isLoading
-                              ? const CenteredProgressIndicator()
-                              : GestureDetector(
-                                  onTap: () {
-                                    authViewModel.logOut();
-                                  },
-                                  child: const Text(
-                                    //TODO: translate
-                                    'Log out',
-                                    style: TextStyle(
-                                      fontSize: 25.0,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                )
+                          DrawerItem(
+                            title: localizations.logOut,
+                            onTap: () => authViewModel.logOut(),
+                          ),
                         ],
                       )
                     : GestureDetector(
@@ -154,6 +148,31 @@ class ProductsScreen extends StatelessWidget {
                     );
                   },
                 ),
+        ),
+      ),
+    );
+  }
+}
+
+class DrawerItem extends StatelessWidget {
+  const DrawerItem({
+    required this.onTap,
+    required this.title,
+    Key? key,
+  }) : super(key: key);
+
+  final Function() onTap;
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 25.0,
+          color: Colors.white,
         ),
       ),
     );

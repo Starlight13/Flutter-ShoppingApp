@@ -5,6 +5,7 @@ import 'package:shopping_app/globals.dart';
 import 'package:shopping_app/models/circle_transition_arguments.dart';
 import 'package:shopping_app/screens/auth_screen/auth_screen.dart';
 import 'package:shopping_app/screens/cart_screen/cart_screen.dart';
+import 'package:shopping_app/screens/favourites_screen/favourites_screen.dart';
 import 'package:shopping_app/screens/products_screen/components/circle_transition_clipper.dart';
 import 'package:shopping_app/screens/products_screen/products_screen.dart';
 import 'package:shopping_app/screens/splash_screen/splash_screen.dart';
@@ -13,6 +14,7 @@ import 'package:shopping_app/services/locator_service.dart';
 import 'package:shopping_app/viewmodels/auth_view_model.dart';
 import 'package:shopping_app/viewmodels/cart_view_model.dart';
 import 'package:shopping_app/viewmodels/category_view_model.dart';
+import 'package:shopping_app/viewmodels/favourites_view_model.dart';
 import 'package:shopping_app/viewmodels/product_view_model.dart';
 import 'package:shopping_app/screens/product_details_screen.dart/product_details_screen.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -40,7 +42,10 @@ void main() async {
         ),
         ChangeNotifierProvider<IAuthViewModel>(
           create: (_) => sl.get(),
-        )
+        ),
+        ChangeNotifierProvider<IFavouritesViewModel>(
+          create: (_) => sl.get(),
+        ),
       ],
       child: const MyApp(),
     ),
@@ -84,7 +89,8 @@ class MyApp extends StatelessWidget {
         SplashScreen.id: (context) => const SplashScreen(),
         ProductsScreen.id: (context) => const ProductsScreen(),
         CartScreen.id: ((context) => const CartScreen()),
-        AuthScreen.id: ((context) => const AuthScreen())
+        AuthScreen.id: ((context) => const AuthScreen()),
+        FavouritesScreen.id: (((context) => const FavouritesScreen()))
       },
       onGenerateRoute: (settings) {
         if (settings.name == ProductDetailsScreen.id) {

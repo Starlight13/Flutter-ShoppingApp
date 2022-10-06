@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shopping_app/models/product.dart';
 import 'package:shopping_app/screens/product_details_screen.dart/components/image_carousel.dart';
+import 'package:shopping_app/screens/shared_components/favourite_button.dart';
 import 'package:shopping_app/screens/shared_components/item_counter.dart';
 import 'package:shopping_app/screens/shared_components/cart_button.dart';
 import 'package:shopping_app/screens/shared_components/primary_action_button.dart';
 import 'package:shopping_app/screens/shared_components/progress_indicator.dart';
 import 'package:shopping_app/viewmodels/cart_view_model.dart';
+import 'package:shopping_app/viewmodels/favourites_view_model.dart';
 import 'package:shopping_app/viewmodels/product_view_model.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -21,6 +23,7 @@ class ProductDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final viewModel = _setProductViewModel(context);
+    final favViewModel = context.watch<IFavouritesViewModel>();
     final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
@@ -77,12 +80,30 @@ class ProductDetailsScreen extends StatelessWidget {
                     const SizedBox(
                       height: 20.0,
                     ),
-                    Text(
-                      '\$${viewModel.product.price}',
-                      style: const TextStyle(
-                        fontSize: 30.0,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '\$${viewModel.product.price}',
+                          style: const TextStyle(
+                            fontSize: 30.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 50.0,
+                          width: 50.0,
+                          child: FavouriteButton(
+                            conditionLoading: favViewModel.isLoading ||
+                                favViewModel.isLoadingProduct,
+                            conditionRed: favViewModel
+                                .isProductFavourited(viewModel.product),
+                            onPressed: () {
+                              favViewModel.toggleFavourite(viewModel.product);
+                            },
+                          ),
+                        )
+                      ],
                     ),
                     const SizedBox(
                       height: 20.0,
