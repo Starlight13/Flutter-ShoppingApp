@@ -9,6 +9,7 @@ class Favourite {
   Favourite({
     required this.userId,
     required this.productId,
+    this.product,
   });
 
   factory Favourite.fromFirestore(

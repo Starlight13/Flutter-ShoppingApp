@@ -1,13 +1,21 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shopping_app/extensions.dart';
-import 'package:shopping_app/globals.dart';
 import 'package:shopping_app/repositories/auth_repo.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:shopping_app/viewmodels/state_view_model.dart';
 
 enum AuthState { loggedOut, enteredEmail, createAccount, loggedIn }
 
-abstract class IAuthViewModel with ChangeNotifier {
+enum FirebaseAuthError {
+  noError,
+  wrongPassword,
+  tooManyRequests,
+  invalidEmail,
+  weakPassword,
+}
+
+abstract class IAuthViewModel extends IStateViewModel {
   AuthState get authState;
   String authScreenButtonText({required AppLocalizations localizations});
   User? get currentUser;
@@ -17,6 +25,7 @@ abstract class IAuthViewModel with ChangeNotifier {
   });
   String? get emailError;
   String? get passError;
+  FirebaseAuthError get authError;
   void setLoggedOutState();
   void logOut();
   bool get isLoading;
@@ -24,12 +33,16 @@ abstract class IAuthViewModel with ChangeNotifier {
   bool get isLoggedIn;
 }
 
-class AuthViewModel with ChangeNotifier implements IAuthViewModel {
+class AuthViewModel extends IAuthViewModel {
   final IAuthRepo _authRepo;
   late AuthState _authState;
   String? _emailError;
   String? _passError;
-  bool _isLoading = false;
+  String? _errorMessage;
+  FirebaseAuthError _authError = FirebaseAuthError.noError;
+  String? _successMessage;
+  final ValueNotifier<ViewModelState> _state =
+      ValueNotifier(ViewModelState.idle);
 
   AuthViewModel({required IAuthRepo authRepo}) : _authRepo = authRepo {
     if (currentUser == null) {
@@ -41,7 +54,16 @@ class AuthViewModel with ChangeNotifier implements IAuthViewModel {
   }
 
   @override
-  bool get isLoading => _isLoading;
+  String? get errorMessage => _errorMessage;
+
+  @override
+  ValueNotifier<ViewModelState> get state => _state;
+
+  @override
+  String? get successMessage => _successMessage;
+
+  @override
+  bool get isLoading => _state.value == ViewModelState.loading;
 
   @override
   AuthState get authState => _authState;
@@ -57,6 +79,9 @@ class AuthViewModel with ChangeNotifier implements IAuthViewModel {
 
   @override
   bool get isLoggedIn => _authState == AuthState.loggedIn;
+
+  @override
+  FirebaseAuthError get authError => _authError;
 
   @override
   String authScreenButtonText({required AppLocalizations localizations}) {
@@ -100,8 +125,8 @@ class AuthViewModel with ChangeNotifier implements IAuthViewModel {
       }
     } on FirebaseAuthException catch (error) {
       if (error.code == 'invalid-email') {
-        //TODO: translate
-        _showSnackBar(snackBarText: 'Invalid email', isError: true);
+        _setAuthError(FirebaseAuthError.invalidEmail);
+        _setState(ViewModelState.error);
       }
     }
   }
@@ -113,25 +138,24 @@ class AuthViewModel with ChangeNotifier implements IAuthViewModel {
 
   @override
   void logOut() async {
-    _setLoading(true);
+    _setState(ViewModelState.loading);
     _authRepo.logOut();
     _setAuthState(AuthState.loggedOut);
-    _showSnackBar(snackBarText: 'You have logged out', isError: false);
-    _setLoading(false);
+    _setSuccessMessage('You have logged out');
+    _setState(ViewModelState.success);
   }
 
   @override
   void resetPasswordWithEmail({required String email, onSuccess}) {
     try {
       _authRepo.sendResetPasswordEmail(email: email);
-      _showSnackBar(
-        snackBarText: 'A reset password link was sent to $email',
-        isError: false,
-      );
+      _setSuccessMessage('A reset password link was sent to $email');
+      _setState(ViewModelState.success);
     } on FirebaseAuthException catch (e) {
       _handleFirebaseException(e);
     } catch (e) {
-      _showSnackBar(snackBarText: e.toString(), isError: true);
+      _setErrorMessage(e.toString());
+      _setState(ViewModelState.error);
     }
   }
 
@@ -151,7 +175,7 @@ class AuthViewModel with ChangeNotifier implements IAuthViewModel {
   }
 
   void _checkIfEmailInUse({required String email}) async {
-    _setLoading(true);
+    _setState(ViewModelState.loading);
     try {
       if (await _authRepo.checkIfEmailInUse(email: email)) {
         _setAuthState(AuthState.enteredEmail);
@@ -160,53 +184,52 @@ class AuthViewModel with ChangeNotifier implements IAuthViewModel {
       }
     } on FirebaseAuthException catch (e) {
       _handleFirebaseException(e);
+      _setState(ViewModelState.error);
     } catch (e) {
-      _showSnackBar(snackBarText: e.toString(), isError: true);
+      _setErrorMessage(e.toString());
+      _setState(ViewModelState.error);
     }
-    _setLoading(false);
+    _setState(ViewModelState.idle);
   }
 
   void _createAccount({required String email, required String password}) async {
-    _setLoading(true);
+    _setState(ViewModelState.loading);
     try {
       final credential =
           await _authRepo.createAccount(email: email, password: password);
       if (credential != null) {
         _setAuthState(AuthState.loggedIn);
-        _showSnackBar(
-          snackBarText: 'You have successfully created an account',
-          isError: false,
-        );
+        _setSuccessMessage('You have successfully created an account');
+        _setState(ViewModelState.success);
       }
     } on FirebaseAuthException catch (e) {
       _handleFirebaseException(e);
+      _setState(ViewModelState.error);
     } catch (e) {
-      _showSnackBar(snackBarText: e.toString(), isError: true);
+      _setErrorMessage(e.toString());
+      _setState(ViewModelState.error);
     }
-    _setLoading(false);
   }
 
   void _logIn({
     required String email,
     required String password,
   }) async {
-    _setLoading(true);
+    _setState(ViewModelState.loading);
     try {
       final credential =
           await _authRepo.logIn(email: email, password: password);
       if (credential != null) {
         _setAuthState(AuthState.loggedIn);
-        _showSnackBar(
-          snackBarText: 'You have successfully logged in',
-          isError: false,
-        );
+        _setSuccessMessage('You have successfully logged in');
+        _setState(ViewModelState.success);
       }
     } on FirebaseAuthException catch (e) {
       _handleFirebaseException(e);
     } catch (e) {
-      _showSnackBar(snackBarText: e.toString(), isError: true);
+      _setErrorMessage(e.toString());
+      _setState(ViewModelState.error);
     }
-    _setLoading(false);
   }
 
   bool _validateEmail({required String email}) {
@@ -238,38 +261,53 @@ class AuthViewModel with ChangeNotifier implements IAuthViewModel {
     return false;
   }
 
-  void _setLoading(bool isLoading) {
-    _isLoading = isLoading;
-    notifyListeners();
-  }
-
   void _handleFirebaseException(FirebaseAuthException authException) {
-    String errorDescription = 'Error occured';
     switch (authException.code) {
       case 'wrong-password':
-        errorDescription = 'The entered password is incorrect';
+        // errorDescription = 'The entered password is incorrect';
+        _setAuthError(FirebaseAuthError.wrongPassword);
         break;
       case 'too-many-requests':
-        errorDescription =
-            'Access to this account has been temporarily disabled due to many failed login attempts';
+        // errorDescription =
+        //     'Access to this account has been temporarily disabled due to many failed login attempts';
+        _setAuthError(FirebaseAuthError.tooManyRequests);
         break;
       case 'invalid-email':
       case 'auth/invalid-email':
-        errorDescription = 'The entered email is invalid';
+        // errorDescription = 'The entered email is invalid';
+        _setAuthError(FirebaseAuthError.invalidEmail);
         break;
       case 'weak-password':
-        errorDescription = 'The entered password is too weak';
+        // errorDescription = 'The entered password is too weak';
+        _setAuthError(FirebaseAuthError.weakPassword);
         break;
     }
-    _showSnackBar(snackBarText: errorDescription, isError: true);
+    _setState(ViewModelState.error);
   }
 
-  _showSnackBar({required String snackBarText, required bool isError}) {
-    snackbarKey.currentState?.showSnackBar(
-      SnackBar(
-        content: Text(snackBarText),
-        backgroundColor: isError ? Colors.red : Colors.teal,
-      ),
-    );
+  @override
+  void resetState() {
+    _setErrorMessage(null);
+    _setSuccessMessage(null);
+    _setAuthError(FirebaseAuthError.noError);
+    _setState(ViewModelState.idle);
+  }
+
+  void _setState(ViewModelState newState) async {
+    _state.value = newState;
+    _state.notifyListeners();
+    notifyListeners();
+  }
+
+  void _setSuccessMessage(String? sucessMessage) {
+    _successMessage = sucessMessage;
+  }
+
+  void _setErrorMessage(String? errorMessage) {
+    _errorMessage = errorMessage;
+  }
+
+  void _setAuthError(FirebaseAuthError error) {
+    _authError = error;
   }
 }

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:shopping_app/extensions.dart';
 import 'package:shopping_app/screens/auth_screen/auth_screen.dart';
 import 'package:shopping_app/screens/favourites_screen/favourites_screen.dart';
+import 'package:shopping_app/screens/products_screen/components/drawer_item.dart';
 import 'package:shopping_app/screens/products_screen/components/horizontal_products_list.dart';
 import 'package:shopping_app/screens/shared_components/cart_button.dart';
 import 'package:shopping_app/services/locator_service.dart';
@@ -148,31 +149,6 @@ class ProductsScreen extends StatelessWidget {
                     );
                   },
                 ),
-        ),
-      ),
-    );
-  }
-}
-
-class DrawerItem extends StatelessWidget {
-  const DrawerItem({
-    required this.onTap,
-    required this.title,
-    Key? key,
-  }) : super(key: key);
-
-  final Function() onTap;
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 25.0,
-          color: Colors.white,
         ),
       ),
     );

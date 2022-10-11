@@ -39,13 +39,9 @@ class AuthRepo implements IAuthRepo {
   Future<bool> checkIfEmailInUse({required String email}) async {
     try {
       final list = await _authService.fetchSignInMethodsForEmail(email: email);
-      if (list != null && list.isNotEmpty) {
-        return true;
-      } else {
-        return false;
-      }
+      return list != null && list.isNotEmpty;
     } catch (error) {
-      return true;
+      rethrow;
     }
   }
 

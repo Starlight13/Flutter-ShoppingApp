@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shopping_app/firebase_options.dart';
-import 'package:shopping_app/globals.dart';
+import 'package:shopping_app/screens/shared_components/global_snack_bar.dart';
 import 'package:shopping_app/models/circle_transition_arguments.dart';
 import 'package:shopping_app/screens/auth_screen/auth_screen.dart';
 import 'package:shopping_app/screens/cart_screen/cart_screen.dart';
@@ -58,7 +58,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      scaffoldMessengerKey: snackbarKey,
+      scaffoldMessengerKey: GlobalSnackBar.snackbarKey,
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,

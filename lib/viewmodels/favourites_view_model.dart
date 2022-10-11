@@ -1,31 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:shopping_app/globals.dart';
 import 'package:shopping_app/models/favourite.dart';
 import 'package:shopping_app/models/product.dart';
 import 'package:shopping_app/repositories/favourites_repo.dart';
 import 'package:shopping_app/repositories/products_repo.dart';
 import 'package:shopping_app/services/locator_service.dart';
 import 'package:shopping_app/viewmodels/auth_view_model.dart';
+import 'package:shopping_app/viewmodels/state_view_model.dart';
 
-abstract class IFavouritesViewModel with ChangeNotifier {
+abstract class IFavouritesViewModel extends IStateViewModel {
   bool get isLoading;
   List<Favourite>? get favourites;
   void addProductToFavourites(Product product);
   bool isProductFavourited(Product product);
   void toggleFavourite(Product product);
   void removeFavourite(Product product, {SlidableController? slidable});
-  bool get isLoadingProduct;
 }
 
-class FavouritesViewModel with ChangeNotifier implements IFavouritesViewModel {
+class FavouritesViewModel extends IFavouritesViewModel {
   final IFavoutiresRepo _favoutiresRepo;
   final IProductsRepo _productsRepo;
   final List<Favourite> _favourites = [];
-  bool _isLoadingProduct = false;
-  bool _isLoading = false;
   late final IAuthViewModel _authViewModel;
+  String? _errorCode;
+  String? _successCode;
+
+  final ValueNotifier<ViewModelState> _state =
+      ValueNotifier(ViewModelState.idle);
 
   FavouritesViewModel({
     required IFavoutiresRepo favoutiresRepo,
@@ -42,16 +44,25 @@ class FavouritesViewModel with ChangeNotifier implements IFavouritesViewModel {
         _listenToFavs(_authViewModel.currentUser!.uid);
       }
     });
+    addListener(() {
+      snackBarListener(this);
+    });
   }
 
   @override
-  bool get isLoading => _isLoading;
-
-  @override
-  bool get isLoadingProduct => _isLoadingProduct;
+  bool get isLoading => state.value == ViewModelState.loading;
 
   @override
   List<Favourite> get favourites => _favourites;
+
+  @override
+  String? get errorMessage => _errorCode;
+
+  @override
+  String? get successMessage => _successCode;
+
+  @override
+  ValueNotifier<ViewModelState> get state => _state;
 
   @override
   bool isProductFavourited(Product product) {
@@ -65,32 +76,28 @@ class FavouritesViewModel with ChangeNotifier implements IFavouritesViewModel {
 
   @override
   void addProductToFavourites(Product product) async {
-    _setLoadingProduct(true);
+    _setState(ViewModelState.loading);
     if (_authViewModel.isLoggedIn) {
       try {
         await _favoutiresRepo.addProductToFavourites(
           favourite: Favourite(
             userId: _authViewModel.currentUser!.uid,
             productId: product.id,
+            product: product,
           ),
         );
-        _showSnackBar(
-          snackBarText: 'You have added ${product.title} to favourites',
-          isError: false,
-        );
+        _setSuccessMessage('You have added ${product.title} to favourites');
+        _setErrorMessage(null);
+        _setState(ViewModelState.success);
       } catch (error) {
-        _showSnackBar(
-          snackBarText: error.toString(),
-          isError: true,
-        );
+        _setErrorMessage(error.toString());
+        _setState(ViewModelState.error);
       }
     } else {
-      _showSnackBar(
-        snackBarText: 'Log in to add product to favourites',
-        isError: true,
-      );
+      _setErrorMessage('Log in to add product to favourites');
+      _setState(ViewModelState.error);
     }
-    _setLoadingProduct(false);
+    _setState(ViewModelState.idle);
   }
 
   @override
@@ -104,7 +111,7 @@ class FavouritesViewModel with ChangeNotifier implements IFavouritesViewModel {
 
   @override
   void removeFavourite(Product product, {SlidableController? slidable}) async {
-    _setLoading(true);
+    _setState(ViewModelState.loading);
     if (_authViewModel.isLoggedIn) {
       final fav = Favourite(
         userId: _authViewModel.currentUser!.uid,
@@ -115,28 +122,31 @@ class FavouritesViewModel with ChangeNotifier implements IFavouritesViewModel {
         await _favoutiresRepo.removeFavourite(
           favourite: fav,
         );
-        _showSnackBar(
-          snackBarText: 'You have removed ${product.title} from favourites',
-          isError: false,
-        );
+        _setSuccessMessage('You have removed ${product.title} from favourites');
+        _setErrorMessage(null);
+        _setState(ViewModelState.success);
       } on StateError catch (error) {
-        _showSnackBar(
-          snackBarText: error.message,
-          isError: true,
-        );
+        _setErrorMessage(error.message);
+        _setState(ViewModelState.error);
       }
     }
-    _setLoading(false);
+  }
+
+  @override
+  void resetState() {
+    _setErrorMessage(null);
+    _setSuccessMessage(null);
+    _setState(ViewModelState.idle);
   }
 
   void _listenToFavs(String userId) {
     _favoutiresRepo.listenToFavourites(userId).listen((favData) async {
-      _setLoading(true);
+      _setState(ViewModelState.loading);
       List<Favourite> updatedFavs = favData;
       if (updatedFavs.isNotEmpty) {
         await _updateList(updatedFavs);
       }
-      _setLoading(false);
+      _setState(ViewModelState.idle);
     });
   }
 
@@ -149,16 +159,19 @@ class FavouritesViewModel with ChangeNotifier implements IFavouritesViewModel {
     _favourites.removeWhere((element) => !updatedFavs.contains(element));
   }
 
-  void _setLoading(bool isLoading) async {
+  void _setState(ViewModelState newState) async {
     await _waitFrame();
-    _isLoading = isLoading;
+    state.value = newState;
+    state.notifyListeners();
     notifyListeners();
   }
 
-  void _setLoadingProduct(bool isLoadingProduct) async {
-    await _waitFrame();
-    _isLoadingProduct = isLoadingProduct;
-    notifyListeners();
+  void _setSuccessMessage(String? sucessCode) {
+    _successCode = sucessCode;
+  }
+
+  void _setErrorMessage(String? errorCode) {
+    _errorCode = errorCode;
   }
 
   Future<void> _waitFrame() async {
@@ -169,14 +182,5 @@ class FavouritesViewModel with ChangeNotifier implements IFavouritesViewModel {
 
   Future<Product> _loadProductInfo({required int productId}) async {
     return _productsRepo.getProductById(productId: productId);
-  }
-
-  _showSnackBar({required String snackBarText, required bool isError}) {
-    snackbarKey.currentState?.showSnackBar(
-      SnackBar(
-        content: Text(snackBarText),
-        backgroundColor: isError ? Colors.red : Colors.teal,
-      ),
-    );
   }
 }

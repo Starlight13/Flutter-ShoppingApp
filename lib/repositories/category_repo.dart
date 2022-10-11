@@ -25,7 +25,7 @@ class CategoryRepo implements ICategoryRepo {
         throw Exception(response.body);
       }
     } catch (e) {
-      return Future.delayed(Duration.zero, () => []);
+      throw Exception(e.toString());
     }
   }
 }

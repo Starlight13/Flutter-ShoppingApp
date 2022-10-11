@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:shopping_app/screens/shared_components/global_snack_bar.dart';
 import 'package:shopping_app/screens/shared_components/primary_action_button.dart';
 import 'package:shopping_app/screens/shared_components/progress_indicator.dart';
-import 'package:shopping_app/services/locator_service.dart';
 import 'package:shopping_app/viewmodels/auth_view_model.dart';
+import 'package:shopping_app/viewmodels/state_view_model.dart';
 
 class AuthScreen extends StatefulWidget {
   static String id = 'authorisation';
@@ -19,6 +20,7 @@ class _AuthScreenState extends State<AuthScreen> {
   final _emailController = TextEditingController();
   final _passController = TextEditingController();
   late IAuthViewModel _authViewModel;
+  late AppLocalizations _localizations;
 
   void popListener() {
     if (_authViewModel.authState == AuthState.loggedIn) {
@@ -29,20 +31,49 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   void initState() {
     super.initState();
-    _authViewModel = sl.get();
+    _authViewModel = context.read<IAuthViewModel>();
     _authViewModel.addListener(popListener);
-  }
-
-  @override
-  void dispose() {
-    _authViewModel.removeListener(popListener);
-    super.dispose();
+    _authViewModel.state.addListener(() {
+      if (_authViewModel.state.value == ViewModelState.success) {
+        GlobalSnackBar.showSnackBar(
+          snackBarText:
+              _authViewModel.successMessage ?? _localizations.operationSucces,
+          isError: false,
+        );
+        _authViewModel.resetState();
+      } else if (_authViewModel.state.value == ViewModelState.error) {
+        String? errorText;
+        switch (_authViewModel.authError) {
+          case FirebaseAuthError.noError:
+            errorText =
+                _authViewModel.errorMessage ?? _localizations.somethingWrong;
+            break;
+          case FirebaseAuthError.wrongPassword:
+            errorText = _localizations.wrongPassword;
+            break;
+          case FirebaseAuthError.tooManyRequests:
+            errorText = _localizations.tooManyRequests;
+            break;
+          case FirebaseAuthError.invalidEmail:
+            errorText = _localizations.invalidEmail;
+            break;
+          case FirebaseAuthError.weakPassword:
+            errorText = _localizations.weakPassword;
+            break;
+        }
+        GlobalSnackBar.showSnackBar(
+          snackBarText: errorText,
+          isError: true,
+        );
+        _authViewModel.resetState();
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    _localizations = AppLocalizations.of(context)!;
     final IAuthViewModel authViewModel = context.watch<IAuthViewModel>();
-    final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(),
       body: SafeArea(
@@ -65,7 +96,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   autocorrect: false,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.email_outlined),
-                    hintText: localizations.email,
+                    hintText: _localizations.email,
                     border: const OutlineInputBorder(
                       borderRadius: BorderRadius.all(
                         Radius.circular(10.0),
@@ -102,7 +133,7 @@ class _AuthScreenState extends State<AuthScreen> {
                               autocorrect: false,
                               decoration: InputDecoration(
                                 prefixIcon: const Icon(Icons.key),
-                                hintText: localizations.password,
+                                hintText: _localizations.password,
                                 border: const OutlineInputBorder(
                                   borderRadius: BorderRadius.all(
                                     Radius.circular(10.0),
@@ -122,7 +153,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                 ),
                                 child: Padding(
                                   padding: const EdgeInsets.only(top: 10.0),
-                                  child: Text(localizations.forgotPassword),
+                                  child: Text(_localizations.forgotPassword),
                                 ),
                               ),
                             )
@@ -142,7 +173,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   );
                 },
                 text: authViewModel.authScreenButtonText(
-                  localizations: localizations,
+                  localizations: _localizations,
                 ),
                 width: 300.0,
               ),
@@ -158,5 +189,13 @@ class _AuthScreenState extends State<AuthScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _authViewModel.removeListener(popListener);
+    _emailController.dispose();
+    _passController.dispose();
+    super.dispose();
   }
 }

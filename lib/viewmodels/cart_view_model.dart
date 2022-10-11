@@ -3,8 +3,9 @@ import 'package:shopping_app/models/cart_item.dart';
 import 'package:shopping_app/models/product.dart';
 // ignore: depend_on_referenced_packages
 import 'package:collection/collection.dart';
+import 'package:shopping_app/viewmodels/state_view_model.dart';
 
-abstract class ICartViewModel with ChangeNotifier {
+abstract class ICartViewModel extends IStateViewModel {
   int get productsCount;
 
   int get cartSummary;
@@ -37,11 +38,37 @@ abstract class ICartViewModel with ChangeNotifier {
   void clearCart();
 }
 
-class CartViewModel with ChangeNotifier implements ICartViewModel {
+class CartViewModel extends ICartViewModel {
   final List<CartItem> _productsInCart = [];
+  String? _errorMessage;
+  String? _successMessage;
+  final ValueNotifier<ViewModelState> _state =
+      ValueNotifier(ViewModelState.idle);
+
+  CartViewModel() {
+    addListener(() {
+      snackBarListener(this);
+    });
+  }
 
   @override
   int get productsCount => _productsInCart.length;
+
+  @override
+  String? get errorMessage => _errorMessage;
+
+  @override
+  ValueNotifier<ViewModelState> get state => _state;
+
+  @override
+  String? get successMessage => _successMessage;
+
+  @override
+  void resetState() {
+    _setErrorMessage(null);
+    _setSuccessMessage(null);
+    _setState(ViewModelState.idle);
+  }
 
   @override
   int get cartSummary {
@@ -62,6 +89,8 @@ class CartViewModel with ChangeNotifier implements ICartViewModel {
     required CartItem cartItem,
   }) {
     _productsInCart.remove(cartItem);
+    _setSuccessMessage('You have removed ${cartItem.product.title} from cart');
+    _setState(ViewModelState.success);
     notifyListeners();
   }
 
@@ -99,6 +128,8 @@ class CartViewModel with ChangeNotifier implements ICartViewModel {
     } else {
       _productsInCart.add(CartItem(product: product, quantity: quantity));
     }
+    _setSuccessMessage('You have added ${product.title} to cart');
+    _setState(ViewModelState.success);
     notifyListeners();
   }
 
@@ -116,5 +147,19 @@ class CartViewModel with ChangeNotifier implements ICartViewModel {
   void clearCart() {
     _productsInCart.clear();
     notifyListeners();
+  }
+
+  void _setState(ViewModelState newState) async {
+    _state.value = newState;
+    _state.notifyListeners();
+    notifyListeners();
+  }
+
+  void _setSuccessMessage(String? sucessMessage) {
+    _successMessage = sucessMessage;
+  }
+
+  void _setErrorMessage(String? errorMessage) {
+    _errorMessage = errorMessage;
   }
 }

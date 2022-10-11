@@ -94,8 +94,7 @@ class ProductDetailsScreen extends StatelessWidget {
                           height: 50.0,
                           width: 50.0,
                           child: FavouriteButton(
-                            conditionLoading: favViewModel.isLoading ||
-                                favViewModel.isLoadingProduct,
+                            conditionLoading: favViewModel.isLoading,
                             conditionRed: favViewModel
                                 .isProductFavourited(viewModel.product),
                             onPressed: () {
@@ -125,14 +124,6 @@ class ProductDetailsScreen extends StatelessWidget {
                               cartViewModel.addToCart(
                                 product: viewModel.product,
                                 quantity: viewModel.quantity,
-                              );
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    '${viewModel.product.title} added to cart!',
-                                  ),
-                                  backgroundColor: Colors.teal,
-                                ),
                               );
                             },
                             text: localizations.addToCart,

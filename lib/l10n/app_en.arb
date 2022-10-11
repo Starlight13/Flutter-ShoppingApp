@@ -9,10 +9,16 @@
   "email": "E-mail",
   "favourites": "Favourites",
   "forgotPassword": "Forgot password?",
+  "invalidEmail": "The entered email is invalid",
   "logIn": "Log in",
   "logOut": "Log out",
   "next": "Next",
+  "operationSucces": "Operation completed successfully",
   "password": "Password",
   "productDetails": "Product details",
-  "total": "Total"
+  "somethingWrong": "Something went wrong",
+  "tooManyRequests": "Access to this account has been temporarily disabled due to many failed login attempts",
+  "total": "Total",
+  "weakPassword": "The entered password is too weak",
+  "wrongPassword": "The entered password is incorrect"
 }
