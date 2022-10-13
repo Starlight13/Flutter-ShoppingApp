@@ -23,7 +23,7 @@ class _AuthScreenState extends State<AuthScreen> {
   late AppLocalizations _localizations;
 
   void popListener() {
-    if (_authViewModel.authState == AuthState.loggedIn) {
+    if (_authViewModel.authState.value == AuthState.loggedIn) {
       Navigator.pop(context);
     }
   }
@@ -32,7 +32,7 @@ class _AuthScreenState extends State<AuthScreen> {
   void initState() {
     super.initState();
     _authViewModel = context.read<IAuthViewModel>();
-    _authViewModel.addListener(popListener);
+    _authViewModel.authState.addListener(popListener);
     _authViewModel.state.addListener(() {
       if (_authViewModel.state.value == ViewModelState.success) {
         GlobalSnackBar.showSnackBar(
@@ -60,6 +60,9 @@ class _AuthScreenState extends State<AuthScreen> {
           case FirebaseAuthError.weakPassword:
             errorText = _localizations.weakPassword;
             break;
+          case FirebaseAuthError.accountExistsWithDifferentCredential:
+            errorText = _localizations.accountExistsWithDifferentCredential;
+            break;
         }
         GlobalSnackBar.showSnackBar(
           snackBarText: errorText,
@@ -86,8 +89,10 @@ class _AuthScreenState extends State<AuthScreen> {
                 child: TextField(
                   controller: _emailController,
                   onChanged: (value) {
-                    if (authViewModel.authState == AuthState.enteredEmail ||
-                        authViewModel.authState == AuthState.createAccount) {
+                    if (authViewModel.authState.value ==
+                            AuthState.enteredEmail ||
+                        authViewModel.authState.value ==
+                            AuthState.createAccount) {
                       authViewModel.setLoggedOutState();
                     }
                   },
@@ -122,8 +127,10 @@ class _AuthScreenState extends State<AuthScreen> {
                       ),
                     );
                   },
-                  child: authViewModel.authState == AuthState.enteredEmail ||
-                          authViewModel.authState == AuthState.createAccount
+                  child: authViewModel.authState.value ==
+                              AuthState.enteredEmail ||
+                          authViewModel.authState.value ==
+                              AuthState.createAccount
                       ? Column(
                           children: [
                             TextField(
@@ -144,7 +151,7 @@ class _AuthScreenState extends State<AuthScreen> {
                               ),
                             ),
                             Visibility(
-                              visible: authViewModel.authState ==
+                              visible: authViewModel.authState.value ==
                                   AuthState.enteredEmail,
                               child: GestureDetector(
                                 onTap: () =>
@@ -183,6 +190,34 @@ class _AuthScreenState extends State<AuthScreen> {
               Visibility(
                 visible: _authViewModel.isLoading,
                 child: const CenteredProgressIndicator(),
+              ),
+              Text(_localizations.orSignIn),
+              const SizedBox(
+                height: 20.0,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: () => _authViewModel.logInWithGoogle(),
+                    child: Image.asset(
+                      'assets/google.png',
+                      width: 40.0,
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 20.0,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      _authViewModel.logInWithFacebook();
+                    },
+                    child: Image.asset(
+                      'assets/facebook.png',
+                      width: 40.0,
+                    ),
+                  )
+                ],
               )
             ],
           ),
@@ -193,7 +228,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   void dispose() {
-    _authViewModel.removeListener(popListener);
+    _authViewModel.authState.removeListener(popListener);
     _emailController.dispose();
     _passController.dispose();
     super.dispose();

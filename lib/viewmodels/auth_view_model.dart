@@ -7,16 +7,19 @@ import 'package:shopping_app/viewmodels/state_view_model.dart';
 
 enum AuthState { loggedOut, enteredEmail, createAccount, loggedIn }
 
+enum LogInMethod { email, google, facebook }
+
 enum FirebaseAuthError {
   noError,
   wrongPassword,
   tooManyRequests,
   invalidEmail,
   weakPassword,
+  accountExistsWithDifferentCredential
 }
 
 abstract class IAuthViewModel extends IStateViewModel {
-  AuthState get authState;
+  ValueNotifier<AuthState> get authState;
   String authScreenButtonText({required AppLocalizations localizations});
   User? get currentUser;
   void authAction({
@@ -31,11 +34,13 @@ abstract class IAuthViewModel extends IStateViewModel {
   bool get isLoading;
   void resetPasswordWithEmail({required String email, onSuccess});
   bool get isLoggedIn;
+  void logInWithGoogle();
+  void logInWithFacebook();
 }
 
 class AuthViewModel extends IAuthViewModel {
   final IAuthRepo _authRepo;
-  late AuthState _authState;
+  late ValueNotifier<AuthState> _authState;
   String? _emailError;
   String? _passError;
   String? _errorMessage;
@@ -46,9 +51,9 @@ class AuthViewModel extends IAuthViewModel {
 
   AuthViewModel({required IAuthRepo authRepo}) : _authRepo = authRepo {
     if (currentUser == null) {
-      _authState = AuthState.loggedOut;
+      _authState = ValueNotifier(AuthState.loggedOut);
     } else {
-      _authState = AuthState.loggedIn;
+      _authState = ValueNotifier(AuthState.loggedIn);
     }
     notifyListeners();
   }
@@ -66,7 +71,7 @@ class AuthViewModel extends IAuthViewModel {
   bool get isLoading => _state.value == ViewModelState.loading;
 
   @override
-  AuthState get authState => _authState;
+  ValueNotifier<AuthState> get authState => _authState;
 
   @override
   User? get currentUser => _authRepo.getCurrentUser();
@@ -78,14 +83,14 @@ class AuthViewModel extends IAuthViewModel {
   String? get passError => _passError;
 
   @override
-  bool get isLoggedIn => _authState == AuthState.loggedIn;
+  bool get isLoggedIn => _authState.value == AuthState.loggedIn;
 
   @override
   FirebaseAuthError get authError => _authError;
 
   @override
   String authScreenButtonText({required AppLocalizations localizations}) {
-    switch (_authState) {
+    switch (_authState.value) {
       case AuthState.loggedOut:
         return localizations.next;
       case AuthState.enteredEmail:
@@ -105,13 +110,17 @@ class AuthViewModel extends IAuthViewModel {
     _setEmailError(null);
     _setPassError(null);
     try {
-      switch (_authState) {
+      switch (_authState.value) {
         case AuthState.loggedOut:
           if (_validateEmail(email: email)) _checkIfEmailInUse(email: email);
           break;
         case AuthState.enteredEmail:
           if (_validateEmail(email: email) && password.isNotEmpty) {
-            _logIn(email: email, password: password);
+            _logInWithMethod(
+              LogInMethod.email,
+              email: email,
+              password: password,
+            );
           }
           break;
         case AuthState.createAccount:
@@ -159,8 +168,57 @@ class AuthViewModel extends IAuthViewModel {
     }
   }
 
-  _setAuthState(AuthState authState) {
-    _authState = authState;
+  @override
+  void logInWithGoogle() {
+    _logInWithMethod(LogInMethod.google);
+  }
+
+  @override
+  void logInWithFacebook() {
+    _logInWithMethod(LogInMethod.facebook);
+  }
+
+  void _logInWithMethod(
+    LogInMethod logInMethod, {
+    String? email,
+    String? password,
+  }) async {
+    _setState(ViewModelState.loading);
+    try {
+      UserCredential? credential;
+      switch (logInMethod) {
+        case LogInMethod.email:
+          if (email != null && password != null) {
+            credential = await _emailLogIn(email: email, password: password);
+          }
+          break;
+        case LogInMethod.google:
+          credential = await _googleLogIn();
+          break;
+        case LogInMethod.facebook:
+          credential = await _facebookLogin();
+          break;
+      }
+      if (credential != null) {
+        _setAuthState(AuthState.loggedIn);
+        _setSuccessMessage('You have successfully logged in');
+        _setState(ViewModelState.success);
+      } else {
+        if (logInMethod == LogInMethod.facebook) {
+          throw FirebaseAuthException(code: 'social-sign-in-canceled');
+        }
+      }
+    } on FirebaseAuthException catch (e) {
+      _handleFirebaseException(e);
+    } catch (e) {
+      _setErrorMessage(e.toString());
+      _setState(ViewModelState.error);
+    }
+  }
+
+  void _setAuthState(AuthState authState) {
+    _authState.value = authState;
+    _authState.notifyListeners();
     notifyListeners();
   }
 
@@ -211,25 +269,20 @@ class AuthViewModel extends IAuthViewModel {
     }
   }
 
-  void _logIn({
+  Future<UserCredential?> _emailLogIn({
     required String email,
     required String password,
   }) async {
     _setState(ViewModelState.loading);
-    try {
-      final credential =
-          await _authRepo.logIn(email: email, password: password);
-      if (credential != null) {
-        _setAuthState(AuthState.loggedIn);
-        _setSuccessMessage('You have successfully logged in');
-        _setState(ViewModelState.success);
-      }
-    } on FirebaseAuthException catch (e) {
-      _handleFirebaseException(e);
-    } catch (e) {
-      _setErrorMessage(e.toString());
-      _setState(ViewModelState.error);
-    }
+    return await _authRepo.logIn(email: email, password: password);
+  }
+
+  Future<UserCredential?> _googleLogIn() async {
+    return await _authRepo.logInWithGoogle();
+  }
+
+  Future<UserCredential?> _facebookLogin() async {
+    return await _authRepo.logInWithFacebook();
   }
 
   bool _validateEmail({required String email}) {
@@ -264,23 +317,24 @@ class AuthViewModel extends IAuthViewModel {
   void _handleFirebaseException(FirebaseAuthException authException) {
     switch (authException.code) {
       case 'wrong-password':
-        // errorDescription = 'The entered password is incorrect';
         _setAuthError(FirebaseAuthError.wrongPassword);
         break;
       case 'too-many-requests':
-        // errorDescription =
-        //     'Access to this account has been temporarily disabled due to many failed login attempts';
         _setAuthError(FirebaseAuthError.tooManyRequests);
         break;
       case 'invalid-email':
       case 'auth/invalid-email':
-        // errorDescription = 'The entered email is invalid';
         _setAuthError(FirebaseAuthError.invalidEmail);
         break;
       case 'weak-password':
-        // errorDescription = 'The entered password is too weak';
         _setAuthError(FirebaseAuthError.weakPassword);
         break;
+      case 'account-exists-with-different-credential':
+        _setAuthError(FirebaseAuthError.accountExistsWithDifferentCredential);
+        break;
+      case 'social-sign-in-canceled':
+        _setState(ViewModelState.idle);
+        return;
     }
     _setState(ViewModelState.error);
   }

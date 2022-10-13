@@ -1,4 +1,5 @@
 {
+  "accountExistsWithDifferentCredential": "An account already exists with the same email address but a different login method. Login with the method used for account creation",
   "addToCart": "Add to cart",
   "cancel": "Cancel",
   "cartTitle": "My Cart",
@@ -14,6 +15,7 @@
   "logOut": "Log out",
   "next": "Next",
   "operationSucces": "Operation completed successfully",
+  "orSignIn": "or sign in with",
   "password": "Password",
   "productDetails": "Product details",
   "somethingWrong": "Something went wrong",

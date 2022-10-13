@@ -29,6 +29,13 @@
             {
               "client_id": "425800908684-86i2mj4nl2snhlpvmcv4ho4ua8tmeq0l.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "425800908684-fkqt056p0u79k0hv7l7abmpnsanq0ttc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.olgarom.shoppingApp"
+              }
             }
           ]
         }

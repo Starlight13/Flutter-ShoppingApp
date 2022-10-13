@@ -1,4 +1,9 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+// ignore: import_of_legacy_library_into_null_safe
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shopping_app/services/auth_service.dart';
 
 enum AuthenticationState { loggedOut, enteredEmail, createAccount, loggedIn }
@@ -20,6 +25,10 @@ abstract class IAuthRepo {
   void logOut();
 
   void sendResetPasswordEmail({required String email});
+
+  Future<UserCredential?> logInWithGoogle();
+
+  Future<UserCredential?> logInWithFacebook();
 }
 
 class AuthRepo implements IAuthRepo {
@@ -56,6 +65,35 @@ class AuthRepo implements IAuthRepo {
     required String password,
   }) async {
     return await _authService.logIn(email: email, password: password);
+  }
+
+  @override
+  Future<UserCredential?> logInWithGoogle() async {
+    final googleUser = await _authService.logInWithGoogle();
+    // ignore: unnecessary_null_comparison
+    if (googleUser == null) {
+      throw FirebaseAuthException(code: 'social-sign-in-canceled');
+    }
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    return await _authService.logInWithCreadential(credential);
+  }
+
+  @override
+  Future<UserCredential?> logInWithFacebook() async {
+    final LoginResult loginResult = await _authService.logInWithFacebook();
+    if (loginResult.accessToken != null) {
+      final OAuthCredential facebookAuthCredential =
+          FacebookAuthProvider.credential(loginResult.accessToken!.token);
+      return await FirebaseAuth.instance
+          .signInWithCredential(facebookAuthCredential);
+    }
+    return null;
   }
 
   @override
