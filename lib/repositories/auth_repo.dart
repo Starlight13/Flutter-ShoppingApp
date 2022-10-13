@@ -29,10 +29,13 @@ abstract class IAuthRepo {
   Future<UserCredential?> logInWithGoogle();
 
   Future<UserCredential?> logInWithFacebook();
+
+  Future<String?> facebookPhotoURL();
 }
 
 class AuthRepo implements IAuthRepo {
   final IAuthService _authService;
+  AccessToken? facebookToken;
 
   AuthRepo({required IAuthService authService}) : _authService = authService;
 
@@ -88,10 +91,21 @@ class AuthRepo implements IAuthRepo {
   Future<UserCredential?> logInWithFacebook() async {
     final LoginResult loginResult = await _authService.logInWithFacebook();
     if (loginResult.accessToken != null) {
+      facebookToken = loginResult.accessToken!;
       final OAuthCredential facebookAuthCredential =
           FacebookAuthProvider.credential(loginResult.accessToken!.token);
       return await FirebaseAuth.instance
           .signInWithCredential(facebookAuthCredential);
+    }
+    return null;
+  }
+
+  @override
+  Future<String?> facebookPhotoURL() async {
+    final user = getCurrentUser();
+    final token = await FacebookAuth.instance.accessToken;
+    if (user != null && token != null) {
+      return '${user.photoURL}?height=500&access_token=${token.token}';
     }
     return null;
   }

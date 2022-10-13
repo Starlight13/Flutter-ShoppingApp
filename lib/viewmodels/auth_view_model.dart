@@ -7,7 +7,7 @@ import 'package:shopping_app/viewmodels/state_view_model.dart';
 
 enum AuthState { loggedOut, enteredEmail, createAccount, loggedIn }
 
-enum LogInMethod { email, google, facebook }
+enum LogInMethod { none, email, google, facebook }
 
 enum FirebaseAuthError {
   noError,
@@ -36,6 +36,7 @@ abstract class IAuthViewModel extends IStateViewModel {
   bool get isLoggedIn;
   void logInWithGoogle();
   void logInWithFacebook();
+  String? get photoUrl;
 }
 
 class AuthViewModel extends IAuthViewModel {
@@ -48,12 +49,14 @@ class AuthViewModel extends IAuthViewModel {
   String? _successMessage;
   final ValueNotifier<ViewModelState> _state =
       ValueNotifier(ViewModelState.idle);
+  String? _photoUrl;
 
   AuthViewModel({required IAuthRepo authRepo}) : _authRepo = authRepo {
     if (currentUser == null) {
       _authState = ValueNotifier(AuthState.loggedOut);
     } else {
       _authState = ValueNotifier(AuthState.loggedIn);
+      _setPhotoUrl();
     }
     notifyListeners();
   }
@@ -87,6 +90,9 @@ class AuthViewModel extends IAuthViewModel {
 
   @override
   FirebaseAuthError get authError => _authError;
+
+  @override
+  String? get photoUrl => _photoUrl;
 
   @override
   String authScreenButtonText({required AppLocalizations localizations}) {
@@ -198,8 +204,11 @@ class AuthViewModel extends IAuthViewModel {
         case LogInMethod.facebook:
           credential = await _facebookLogin();
           break;
+        case LogInMethod.none:
+          return;
       }
       if (credential != null) {
+        _setPhotoUrl();
         _setAuthState(AuthState.loggedIn);
         _setSuccessMessage('You have successfully logged in');
         _setState(ViewModelState.success);
@@ -363,5 +372,15 @@ class AuthViewModel extends IAuthViewModel {
 
   void _setAuthError(FirebaseAuthError error) {
     _authError = error;
+  }
+
+  void _setPhotoUrl() async {
+    _setState(ViewModelState.loading);
+    if (currentUser?.providerData.first.providerId == 'facebook.com') {
+      _photoUrl = await _authRepo.facebookPhotoURL();
+    } else {
+      _photoUrl = currentUser?.photoURL;
+    }
+    _setState(ViewModelState.idle);
   }
 }

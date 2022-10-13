@@ -58,9 +58,57 @@ class ProductsScreen extends StatelessWidget {
                     child: Center(child: child),
                   );
                 }),
-                child: authViewModel.isLoggedIn
+                child: authViewModel.isLoggedIn &&
+                        authViewModel.currentUser != null
                     ? Column(
                         children: [
+                          if (authViewModel.photoUrl != null)
+                            CircleAvatar(
+                              backgroundColor: Colors.white,
+                              foregroundImage: NetworkImage(
+                                authViewModel.photoUrl!,
+                              ),
+                              radius: 50.0,
+                            )
+                          else
+                            Column(
+                              children: [
+                                Container(
+                                  decoration: const BoxDecoration(
+                                    color: Colors.orange,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  padding: const EdgeInsets.all(30.0),
+                                  width: 130.0,
+                                  child: Center(
+                                    child: Text(
+                                      authViewModel.currentUser!.displayName
+                                              ?.substring(0, 1) ??
+                                          authViewModel.currentUser!.email!
+                                              .substring(0, 1),
+                                      style: const TextStyle(
+                                        fontSize: 30.0,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          Text(
+                            authViewModel.currentUser!.displayName ??
+                                authViewModel.currentUser!.email!,
+                            style: const TextStyle(
+                              fontSize: 25.0,
+                              color: Colors.white,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            maxLines: 2,
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(
+                            height: 20.0,
+                          ),
                           DrawerItem(
                             onTap: () => Navigator.pushNamed(
                               context,
