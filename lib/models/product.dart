@@ -5,6 +5,7 @@ class Product {
   final int price;
   final String thumbnail;
   final List<String> images;
+  final String category;
 
   Product({
     required this.id,
@@ -13,6 +14,7 @@ class Product {
     required this.price,
     required this.images,
     required this.thumbnail,
+    required this.category,
   });
 
   factory Product.fromMap(Map<String, dynamic> map) {
@@ -23,6 +25,7 @@ class Product {
       price: map['price'] as int,
       images: (map['images'] as List<dynamic>).map((e) => e as String).toList(),
       thumbnail: map['thumbnail'] as String,
+      category: map['category'] as String,
     );
   }
 

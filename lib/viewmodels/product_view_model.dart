@@ -13,7 +13,7 @@ abstract class IProductViewModel with ChangeNotifier {
 
 class ProductViewModel with ChangeNotifier implements IProductViewModel {
   late Product _product;
-  late int _quantity;
+  int _quantity = 1;
 
   @override
   Product get product => _product;
