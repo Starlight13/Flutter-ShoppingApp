@@ -26,7 +26,7 @@ abstract class IAuthService {
 
   Future<void> sendPasswordResetEmail({required String email});
 
-  Future<GoogleSignInAccount> logInWithGoogle();
+  Future<GoogleSignInAccount?> logInWithGoogle();
 
   Future<LoginResult> logInWithFacebook();
 
@@ -75,7 +75,7 @@ class AuthService extends IAuthService {
   }
 
   @override
-  Future<GoogleSignInAccount> logInWithGoogle() async {
+  Future<GoogleSignInAccount?> logInWithGoogle() async {
     final googleSignIn = GoogleSignIn(
       scopes: [
         'email',

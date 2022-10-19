@@ -214,10 +214,6 @@ class AuthViewModel extends IAuthViewModel {
         _setAuthState(AuthState.loggedIn);
         _setSuccessMessage('You have successfully logged in');
         _setState(ViewModelState.success);
-      } else {
-        if (logInMethod == LogInMethod.facebook) {
-          throw FirebaseAuthException(code: 'social-sign-in-canceled');
-        }
       }
     } on FirebaseAuthException catch (e) {
       _handleFirebaseException(e);
@@ -386,12 +382,10 @@ class AuthViewModel extends IAuthViewModel {
   }
 
   void _setPhotoUrl() async {
-    _setState(ViewModelState.loading);
     if (currentUser?.providerData.first.providerId == 'facebook.com') {
       _photoUrl = await _authRepo.facebookPhotoURL();
     } else {
       _photoUrl = currentUser?.photoURL;
     }
-    _setState(ViewModelState.idle);
   }
 }
