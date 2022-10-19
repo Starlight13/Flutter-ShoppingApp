@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:shopping_app/firebase_options.dart';
 import 'package:shopping_app/models/circle_transition_arguments.dart';
@@ -22,6 +23,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
+  await dotenv.load(fileName: '.env');
   setupLocator();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
