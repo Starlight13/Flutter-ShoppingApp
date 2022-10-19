@@ -4,7 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shopping_app/constants.dart';
 import 'package:shopping_app/models/category.dart';
 import 'package:shopping_app/models/circle_transition_arguments.dart';
-import 'package:shopping_app/screens/product_details_screen.dart/product_details_screen.dart';
+import 'package:shopping_app/screens/product_details_screen/product_details_screen.dart';
 import 'package:shopping_app/screens/shared_components/progress_indicator.dart';
 import 'package:shopping_app/viewmodels/category_view_model.dart';
 

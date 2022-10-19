@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shopping_app/models/product.dart';
-import 'package:shopping_app/screens/product_details_screen.dart/components/image_carousel.dart';
+import 'package:shopping_app/screens/product_details_screen/components/image_carousel.dart';
 import 'package:shopping_app/screens/shared_components/favourite_button.dart';
 import 'package:shopping_app/screens/shared_components/item_counter.dart';
 import 'package:shopping_app/screens/shared_components/cart_button.dart';

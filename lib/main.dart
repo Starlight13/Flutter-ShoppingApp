@@ -16,7 +16,7 @@ import 'package:shopping_app/viewmodels/cart_view_model.dart';
 import 'package:shopping_app/viewmodels/category_view_model.dart';
 import 'package:shopping_app/viewmodels/favourites_view_model.dart';
 import 'package:shopping_app/viewmodels/product_view_model.dart';
-import 'package:shopping_app/screens/product_details_screen.dart/product_details_screen.dart';
+import 'package:shopping_app/screens/product_details_screen/product_details_screen.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 // ignore: depend_on_referenced_packages

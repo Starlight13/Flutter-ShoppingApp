@@ -4,7 +4,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:shopping_app/constants.dart';
 import 'package:shopping_app/models/circle_transition_arguments.dart';
-import 'package:shopping_app/screens/product_details_screen.dart/product_details_screen.dart';
+import 'package:shopping_app/screens/product_details_screen/product_details_screen.dart';
 import 'package:shopping_app/screens/shared_components/favourite_button.dart';
 import 'package:shopping_app/screens/shared_components/progress_indicator.dart';
 import 'package:shopping_app/viewmodels/favourites_view_model.dart';
