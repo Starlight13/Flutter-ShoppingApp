@@ -50,6 +50,7 @@ dependencies:
   flutter_native_splash: ^2.2.9
   firebase_auth: ^3.9.0
   cloud_firestore: ^3.5.0
+  async: ^2.9.0
 
 dev_dependencies:
   flutter_test:

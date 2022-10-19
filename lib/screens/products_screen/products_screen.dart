@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:shopping_app/extensions.dart';
 import 'package:shopping_app/screens/auth_screen/auth_screen.dart';
@@ -11,6 +12,7 @@ import 'package:shopping_app/viewmodels/auth_view_model.dart';
 import 'package:shopping_app/viewmodels/category_view_model.dart';
 import 'package:shopping_app/screens/shared_components/progress_indicator.dart';
 import 'package:shopping_app/viewmodels/product_search_view_model.dart';
+import 'package:shopping_app/viewmodels/state_view_model.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -24,6 +26,33 @@ class ProductsScreen extends StatelessWidget {
     final viewModel = context.watch<ICategoryViewModel>();
     final localizations = AppLocalizations.of(context)!;
     final authViewModel = context.watch<IAuthViewModel>();
+    if (authViewModel.state.value == ViewModelState.success) {
+      SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              authViewModel.successMessage ?? localizations.operationSucces,
+            ),
+            backgroundColor: Colors.teal,
+          ),
+        );
+        authViewModel.resetState();
+      });
+    } else if (authViewModel.state.value == ViewModelState.error) {
+      SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              authViewModel.errorMessage ?? localizations.somethingWrong,
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+        authViewModel.resetState();
+      });
+    }
     return Scaffold(
       drawer: Drawer(
         backgroundColor: Colors.teal,

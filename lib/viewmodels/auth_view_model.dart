@@ -1,3 +1,4 @@
+import 'package:async/async.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shopping_app/extensions.dart';
@@ -50,6 +51,7 @@ class AuthViewModel extends IAuthViewModel {
   final ValueNotifier<ViewModelState> _state =
       ValueNotifier(ViewModelState.idle);
   String? _photoUrl;
+  RestartableTimer? _timer;
 
   AuthViewModel({required IAuthRepo authRepo}) : _authRepo = authRepo {
     if (currentUser == null) {
@@ -350,10 +352,16 @@ class AuthViewModel extends IAuthViewModel {
 
   @override
   void resetState() {
-    _setErrorMessage(null);
-    _setSuccessMessage(null);
-    _setAuthError(FirebaseAuthError.noError);
-    _setState(ViewModelState.idle);
+    if (_timer == null) {
+      _timer = RestartableTimer(const Duration(milliseconds: 1000), () {
+        _setErrorMessage(null);
+        _setSuccessMessage(null);
+        _setAuthError(FirebaseAuthError.noError);
+        _setState(ViewModelState.idle);
+      });
+    } else {
+      _timer!.reset();
+    }
   }
 
   void _setState(ViewModelState newState) async {
@@ -364,14 +372,17 @@ class AuthViewModel extends IAuthViewModel {
 
   void _setSuccessMessage(String? sucessMessage) {
     _successMessage = sucessMessage;
+    notifyListeners();
   }
 
   void _setErrorMessage(String? errorMessage) {
     _errorMessage = errorMessage;
+    notifyListeners();
   }
 
   void _setAuthError(FirebaseAuthError error) {
     _authError = error;
+    notifyListeners();
   }
 
   void _setPhotoUrl() async {

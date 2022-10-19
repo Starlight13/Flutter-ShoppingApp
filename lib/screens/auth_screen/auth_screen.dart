@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:shopping_app/screens/shared_components/global_snack_bar.dart';
 import 'package:shopping_app/screens/shared_components/primary_action_button.dart';
 import 'package:shopping_app/screens/shared_components/progress_indicator.dart';
 import 'package:shopping_app/viewmodels/auth_view_model.dart';
@@ -20,7 +20,6 @@ class _AuthScreenState extends State<AuthScreen> {
   final _emailController = TextEditingController();
   final _passController = TextEditingController();
   late IAuthViewModel _authViewModel;
-  late AppLocalizations _localizations;
 
   void popListener() {
     if (_authViewModel.authState.value == AuthState.loggedIn) {
@@ -33,50 +32,59 @@ class _AuthScreenState extends State<AuthScreen> {
     super.initState();
     _authViewModel = context.read<IAuthViewModel>();
     _authViewModel.authState.addListener(popListener);
-    _authViewModel.state.addListener(() {
-      if (_authViewModel.state.value == ViewModelState.success) {
-        GlobalSnackBar.showSnackBar(
-          snackBarText:
-              _authViewModel.successMessage ?? _localizations.operationSucces,
-          isError: false,
-        );
-        _authViewModel.resetState();
-      } else if (_authViewModel.state.value == ViewModelState.error) {
-        String? errorText;
-        switch (_authViewModel.authError) {
-          case FirebaseAuthError.noError:
-            errorText =
-                _authViewModel.errorMessage ?? _localizations.somethingWrong;
-            break;
-          case FirebaseAuthError.wrongPassword:
-            errorText = _localizations.wrongPassword;
-            break;
-          case FirebaseAuthError.tooManyRequests:
-            errorText = _localizations.tooManyRequests;
-            break;
-          case FirebaseAuthError.invalidEmail:
-            errorText = _localizations.invalidEmail;
-            break;
-          case FirebaseAuthError.weakPassword:
-            errorText = _localizations.weakPassword;
-            break;
-          case FirebaseAuthError.accountExistsWithDifferentCredential:
-            errorText = _localizations.accountExistsWithDifferentCredential;
-            break;
-        }
-        GlobalSnackBar.showSnackBar(
-          snackBarText: errorText,
-          isError: true,
-        );
-        _authViewModel.resetState();
-      }
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    _localizations = AppLocalizations.of(context)!;
+    final localizations = AppLocalizations.of(context)!;
     final IAuthViewModel authViewModel = context.watch<IAuthViewModel>();
+    if (authViewModel.state.value == ViewModelState.success) {
+      SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              authViewModel.successMessage ?? localizations.operationSucces,
+            ),
+            backgroundColor: Colors.teal,
+          ),
+        );
+        authViewModel.resetState();
+      });
+    } else if (authViewModel.state.value == ViewModelState.error) {
+      SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+        String? errorText;
+        switch (_authViewModel.authError) {
+          case FirebaseAuthError.noError:
+            errorText =
+                _authViewModel.errorMessage ?? localizations.somethingWrong;
+            break;
+          case FirebaseAuthError.wrongPassword:
+            errorText = localizations.wrongPassword;
+            break;
+          case FirebaseAuthError.tooManyRequests:
+            errorText = localizations.tooManyRequests;
+            break;
+          case FirebaseAuthError.invalidEmail:
+            errorText = localizations.invalidEmail;
+            break;
+          case FirebaseAuthError.weakPassword:
+            errorText = localizations.weakPassword;
+            break;
+          case FirebaseAuthError.accountExistsWithDifferentCredential:
+            errorText = localizations.accountExistsWithDifferentCredential;
+            break;
+        }
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorText),
+            backgroundColor: Colors.red,
+          ),
+        );
+        authViewModel.resetState();
+      });
+    }
     return Scaffold(
       appBar: AppBar(),
       body: SafeArea(
@@ -101,7 +109,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   autocorrect: false,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.email_outlined),
-                    hintText: _localizations.email,
+                    hintText: localizations.email,
                     border: const OutlineInputBorder(
                       borderRadius: BorderRadius.all(
                         Radius.circular(10.0),
@@ -127,46 +135,46 @@ class _AuthScreenState extends State<AuthScreen> {
                       ),
                     );
                   },
-                  child: authViewModel.authState.value ==
-                              AuthState.enteredEmail ||
-                          authViewModel.authState.value ==
-                              AuthState.createAccount
-                      ? Column(
-                          children: [
-                            TextField(
-                              controller: _passController,
-                              obscureText: true,
-                              enableSuggestions: false,
-                              autocorrect: false,
-                              decoration: InputDecoration(
-                                prefixIcon: const Icon(Icons.key),
-                                hintText: _localizations.password,
-                                border: const OutlineInputBorder(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(10.0),
+                  child:
+                      authViewModel.authState.value == AuthState.enteredEmail ||
+                              authViewModel.authState.value ==
+                                  AuthState.createAccount
+                          ? Column(
+                              children: [
+                                TextField(
+                                  controller: _passController,
+                                  obscureText: true,
+                                  enableSuggestions: false,
+                                  autocorrect: false,
+                                  decoration: InputDecoration(
+                                    prefixIcon: const Icon(Icons.key),
+                                    hintText: localizations.password,
+                                    border: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(10.0),
+                                      ),
+                                    ),
+                                    errorText: authViewModel.passError,
+                                    errorMaxLines: 2,
                                   ),
                                 ),
-                                errorText: authViewModel.passError,
-                                errorMaxLines: 2,
-                              ),
-                            ),
-                            Visibility(
-                              visible: authViewModel.authState.value ==
-                                  AuthState.enteredEmail,
-                              child: GestureDetector(
-                                onTap: () =>
-                                    _authViewModel.resetPasswordWithEmail(
-                                  email: _emailController.text,
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.only(top: 10.0),
-                                  child: Text(_localizations.forgotPassword),
-                                ),
-                              ),
+                                Visibility(
+                                  visible: authViewModel.authState.value ==
+                                      AuthState.enteredEmail,
+                                  child: GestureDetector(
+                                    onTap: () =>
+                                        _authViewModel.resetPasswordWithEmail(
+                                      email: _emailController.text,
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top: 10.0),
+                                      child: Text(localizations.forgotPassword),
+                                    ),
+                                  ),
+                                )
+                              ],
                             )
-                          ],
-                        )
-                      : null,
+                          : null,
                 ),
               ),
               const SizedBox(
@@ -180,7 +188,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   );
                 },
                 text: authViewModel.authScreenButtonText(
-                  localizations: _localizations,
+                  localizations: localizations,
                 ),
                 width: 300.0,
               ),
@@ -191,7 +199,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 visible: _authViewModel.isLoading,
                 child: const CenteredProgressIndicator(),
               ),
-              Text(_localizations.orSignIn),
+              Text(localizations.orSignIn),
               const SizedBox(
                 height: 20.0,
               ),
