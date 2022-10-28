@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:shopping_app/models/product.dart';
 import 'package:shopping_app/screens/product_details_screen/components/image_carousel.dart';
@@ -12,6 +13,7 @@ import 'package:shopping_app/viewmodels/cart_view_model.dart';
 import 'package:shopping_app/viewmodels/favourites_view_model.dart';
 import 'package:shopping_app/viewmodels/product_view_model.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:shopping_app/viewmodels/state_view_model.dart';
 
 class ProductDetailsScreen extends StatelessWidget {
   static const id = 'product_details_screen';
@@ -24,7 +26,10 @@ class ProductDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final viewModel = _setProductViewModel(context);
     final favViewModel = context.watch<IFavouritesViewModel>();
+    final cartViewModel = context.watch<ICartViewModel>();
     final localizations = AppLocalizations.of(context)!;
+    _snackBarUpdate(favViewModel, context);
+    _snackBarUpdate(cartViewModel, context);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -119,8 +124,6 @@ class ProductDetailsScreen extends StatelessWidget {
                         Expanded(
                           child: PrimaryActionButton(
                             onTap: () {
-                              final cartViewModel =
-                                  context.read<ICartViewModel>();
                               cartViewModel.addToCart(
                                 product: viewModel.product,
                                 quantity: viewModel.quantity,
@@ -147,5 +150,36 @@ class ProductDetailsScreen extends StatelessWidget {
       ModalRoute.of(context)?.settings.arguments as Product,
     );
     return viewModel;
+  }
+
+  void _snackBarUpdate(IStateViewModel viewModel, BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    if (viewModel.state.value == ViewModelState.success) {
+      SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              viewModel.successMessage ?? localizations.operationSucces,
+            ),
+            backgroundColor: Colors.teal,
+          ),
+        );
+        viewModel.resetState();
+      });
+    } else if (viewModel.state.value == ViewModelState.error) {
+      SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              viewModel.errorMessage ?? localizations.somethingWrong,
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+        viewModel.resetState();
+      });
+    }
   }
 }

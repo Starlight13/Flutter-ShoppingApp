@@ -73,7 +73,6 @@ class AuthRepo implements IAuthRepo {
   @override
   Future<UserCredential?> logInWithGoogle() async {
     final googleUser = await _authService.logInWithGoogle();
-    // ignore: unnecessary_null_comparison
     if (googleUser == null) {
       throw FirebaseAuthException(code: 'social-sign-in-canceled');
     }
@@ -96,8 +95,9 @@ class AuthRepo implements IAuthRepo {
           FacebookAuthProvider.credential(loginResult.accessToken!.token);
       return await FirebaseAuth.instance
           .signInWithCredential(facebookAuthCredential);
+    } else {
+      throw FirebaseAuthException(code: 'social-sign-in-canceled');
     }
-    return null;
   }
 
   @override

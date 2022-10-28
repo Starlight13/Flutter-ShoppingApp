@@ -1,11 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:shopping_app/screens/shared_components/item_counter.dart';
 import 'package:shopping_app/viewmodels/cart_view_model.dart';
 import 'package:shopping_app/constants.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:shopping_app/viewmodels/state_view_model.dart';
 
 class CartScreen extends StatelessWidget {
   static const id = 'cart_screen';
@@ -18,6 +20,33 @@ class CartScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final viewModel = context.watch<ICartViewModel>();
     final localizations = AppLocalizations.of(context)!;
+    if (viewModel.state.value == ViewModelState.success) {
+      SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              viewModel.successMessage ?? localizations.operationSucces,
+            ),
+            backgroundColor: Colors.teal,
+          ),
+        );
+        viewModel.resetState();
+      });
+    } else if (viewModel.state.value == ViewModelState.error) {
+      SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              viewModel.errorMessage ?? localizations.somethingWrong,
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+        viewModel.resetState();
+      });
+    }
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(

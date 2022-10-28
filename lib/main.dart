@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:shopping_app/firebase_options.dart';
-import 'package:shopping_app/screens/shared_components/global_snack_bar.dart';
 import 'package:shopping_app/models/circle_transition_arguments.dart';
 import 'package:shopping_app/screens/auth_screen/auth_screen.dart';
 import 'package:shopping_app/screens/cart_screen/cart_screen.dart';
@@ -23,6 +23,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
+  await dotenv.load(fileName: '.env');
   setupLocator();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -58,7 +59,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      scaffoldMessengerKey: GlobalSnackBar.snackbarKey,
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,

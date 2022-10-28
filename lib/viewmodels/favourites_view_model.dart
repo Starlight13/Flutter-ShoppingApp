@@ -1,3 +1,4 @@
+import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -25,6 +26,7 @@ class FavouritesViewModel extends IFavouritesViewModel {
   late final IAuthViewModel _authViewModel;
   String? _errorCode;
   String? _successCode;
+  RestartableTimer? _timer;
 
   final ValueNotifier<ViewModelState> _state =
       ValueNotifier(ViewModelState.idle);
@@ -43,9 +45,6 @@ class FavouritesViewModel extends IFavouritesViewModel {
         _favourites.clear();
         _listenToFavs(_authViewModel.currentUser!.uid);
       }
-    });
-    addListener(() {
-      snackBarListener(this);
     });
   }
 
@@ -89,15 +88,17 @@ class FavouritesViewModel extends IFavouritesViewModel {
         _setSuccessMessage('You have added ${product.title} to favourites');
         _setErrorMessage(null);
         _setState(ViewModelState.success);
+        return;
       } catch (error) {
         _setErrorMessage(error.toString());
         _setState(ViewModelState.error);
+        return;
       }
     } else {
       _setErrorMessage('Log in to add product to favourites');
       _setState(ViewModelState.error);
+      return;
     }
-    _setState(ViewModelState.idle);
   }
 
   @override
@@ -134,9 +135,15 @@ class FavouritesViewModel extends IFavouritesViewModel {
 
   @override
   void resetState() {
-    _setErrorMessage(null);
-    _setSuccessMessage(null);
-    _setState(ViewModelState.idle);
+    if (_timer == null) {
+      _timer = RestartableTimer(const Duration(milliseconds: 1000), () {
+        _setErrorMessage(null);
+        _setSuccessMessage(null);
+        _setState(ViewModelState.idle);
+      });
+    } else {
+      _timer!.reset();
+    }
   }
 
   void _listenToFavs(String userId) {
@@ -168,10 +175,12 @@ class FavouritesViewModel extends IFavouritesViewModel {
 
   void _setSuccessMessage(String? sucessCode) {
     _successCode = sucessCode;
+    notifyListeners();
   }
 
   void _setErrorMessage(String? errorCode) {
     _errorCode = errorCode;
+    notifyListeners();
   }
 
   Future<void> _waitFrame() async {

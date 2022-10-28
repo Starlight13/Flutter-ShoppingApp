@@ -1,3 +1,4 @@
+import 'package:async/async.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shopping_app/models/cart_item.dart';
 import 'package:shopping_app/models/product.dart';
@@ -40,22 +41,16 @@ abstract class ICartViewModel extends IStateViewModel {
 
 class CartViewModel extends ICartViewModel {
   final List<CartItem> _productsInCart = [];
-  String? _errorMessage;
   String? _successMessage;
   final ValueNotifier<ViewModelState> _state =
       ValueNotifier(ViewModelState.idle);
-
-  CartViewModel() {
-    addListener(() {
-      snackBarListener(this);
-    });
-  }
+  RestartableTimer? _timer;
 
   @override
   int get productsCount => _productsInCart.length;
 
   @override
-  String? get errorMessage => _errorMessage;
+  String? get errorMessage => null;
 
   @override
   ValueNotifier<ViewModelState> get state => _state;
@@ -65,9 +60,14 @@ class CartViewModel extends ICartViewModel {
 
   @override
   void resetState() {
-    _setErrorMessage(null);
-    _setSuccessMessage(null);
-    _setState(ViewModelState.idle);
+    if (_timer == null) {
+      _timer = RestartableTimer(const Duration(milliseconds: 1000), () {
+        _setSuccessMessage(null);
+        _setState(ViewModelState.idle);
+      });
+    } else {
+      _timer!.reset();
+    }
   }
 
   @override
@@ -157,9 +157,6 @@ class CartViewModel extends ICartViewModel {
 
   void _setSuccessMessage(String? sucessMessage) {
     _successMessage = sucessMessage;
-  }
-
-  void _setErrorMessage(String? errorMessage) {
-    _errorMessage = errorMessage;
+    notifyListeners();
   }
 }

@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:shopping_app/constants.dart';
@@ -9,6 +10,7 @@ import 'package:shopping_app/screens/shared_components/favourite_button.dart';
 import 'package:shopping_app/screens/shared_components/progress_indicator.dart';
 import 'package:shopping_app/viewmodels/favourites_view_model.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:shopping_app/viewmodels/state_view_model.dart';
 
 class FavouritesScreen extends StatelessWidget {
   static String id = 'favourites_screen';
@@ -18,6 +20,34 @@ class FavouritesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final favouritesViewModel = context.watch<IFavouritesViewModel>();
     final localizations = AppLocalizations.of(context)!;
+    if (favouritesViewModel.state.value == ViewModelState.success) {
+      SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              favouritesViewModel.successMessage ??
+                  localizations.operationSucces,
+            ),
+            backgroundColor: Colors.teal,
+          ),
+        );
+        favouritesViewModel.resetState();
+      });
+    } else if (favouritesViewModel.state.value == ViewModelState.error) {
+      SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              favouritesViewModel.errorMessage ?? localizations.somethingWrong,
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+        favouritesViewModel.resetState();
+      });
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text(localizations.favourites),
