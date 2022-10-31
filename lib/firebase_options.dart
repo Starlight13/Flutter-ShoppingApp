@@ -4,7 +4,7 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_config/flutter_config.dart';
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
@@ -60,7 +60,7 @@ class DefaultFirebaseOptions {
   );
 
   static FirebaseOptions ios = FirebaseOptions(
-    apiKey: dotenv.env['GOOGLE_API_KEY']!,
+    apiKey: FlutterConfig.get('GOOGLE_API_KEY'),
     appId: '1:425800908684:ios:c1ba7752679eeedb2060a9',
     messagingSenderId: '425800908684',
     projectId: 'flutter-shopping-app-69a13',

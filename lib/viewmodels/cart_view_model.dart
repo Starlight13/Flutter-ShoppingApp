@@ -149,6 +149,12 @@ class CartViewModel extends ICartViewModel {
     notifyListeners();
   }
 
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
   void _setState(ViewModelState newState) async {
     _state.value = newState;
     _state.notifyListeners();

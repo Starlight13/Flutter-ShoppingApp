@@ -41,8 +41,8 @@ class FavouritesViewModel extends IFavouritesViewModel {
       _listenToFavs(_authViewModel.currentUser!.uid);
     }
     _authViewModel.addListener(() {
+      _favourites.clear();
       if (_authViewModel.isLoggedIn) {
-        _favourites.clear();
         _listenToFavs(_authViewModel.currentUser!.uid);
       }
     });
@@ -144,6 +144,12 @@ class FavouritesViewModel extends IFavouritesViewModel {
     } else {
       _timer!.reset();
     }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 
   void _listenToFavs(String userId) {

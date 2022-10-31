@@ -360,6 +360,12 @@ class AuthViewModel extends IAuthViewModel {
     }
   }
 
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
   void _setState(ViewModelState newState) async {
     _state.value = newState;
     _state.notifyListeners();
