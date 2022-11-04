@@ -138,10 +138,9 @@ class _AuthScreenState extends State<AuthScreen> {
                                   errorMaxLines: 2,
                                 ),
                               ),
-                              Visibility(
-                                visible: authViewModel.authState.value ==
-                                    AuthState.enteredEmail,
-                                child: GestureDetector(
+                              if (authViewModel.authState.value ==
+                                  AuthState.enteredEmail)
+                                GestureDetector(
                                   onTap: () =>
                                       _authViewModel.resetPasswordWithEmail(
                                     email: _emailController.text,
@@ -151,7 +150,6 @@ class _AuthScreenState extends State<AuthScreen> {
                                     child: Text(localizations.forgotPassword),
                                   ),
                                 ),
-                              )
                             ],
                           )
                         : null,
