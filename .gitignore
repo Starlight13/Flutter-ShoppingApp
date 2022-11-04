@@ -48,7 +48,6 @@ app.*.map.json
 
 #Firebase related
 /ios/Runner/GoogleService-Info.plist
-/ios/Runner/Info.plist
-/android/app/src/main/res/values/strings.xml
 
+/ios/Security.xcconfig
 .env
